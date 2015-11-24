@@ -1,0 +1,10 @@
+GeneratorModel for yakindu::cpp {
+
+	statechart robot_v1 {
+
+		feature Outlet {
+			targetProject = "Robot_collision"
+			targetFolder = "src-gen"
+		}
+	}
+}
