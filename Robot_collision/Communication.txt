@@ -1,4 +1,6 @@
 Comm.message
-	0: nem érkezett üzenet
+	0: nem erkezett uzenet
 	1: Cloud online
 	2: Robot online
+	3: Dead End + 2 parameter (x,y)
+	4: Path Sended
