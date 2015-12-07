@@ -1,0 +1,4 @@
+Comm.message
+	0: nem érkezett üzenet
+	1: Cloud online
+	2: Robot online
