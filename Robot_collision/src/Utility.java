@@ -27,7 +27,7 @@ public class Utility {
 	}
 	public long getStep(String path, long i){return i%4;}
 	
-	public long sendMessage(long s1){ return 1;}
+	public long sendMessage(long s1, long x, long y){ return 1;}
 	public long waitMessage(){
 		try {
 			Thread.sleep(3000);
