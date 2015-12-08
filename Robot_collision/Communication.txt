@@ -4,3 +4,11 @@ Comm.message
 	2: Robot online
 	3: Dead End + 2 parameter (x,y)
 	4: Path Sended
+
+topic/cloud/map -> map(nxn-es mtx), kezdo pozicio(x,y), cel pozicio(x,y)
+
+topic/cloud/path -> fileba irodik a bejarando utvonal
+
+topic/cloud/signal -> Comm.message valtozoba irodik (1-4)
+
+DeadEnd pozíció(x,y) -> topic/robot
