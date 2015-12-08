@@ -30,6 +30,8 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 			main_region_Robot_Logic_Robot_Logic_sd_Up,
 			main_region_Robot_Logic_Robot_Logic_sd_Right,
 			main_region_Robot_Logic_Robot_Logic_sd_Check_goals,
+			main_region_Robot_Logic_Robot_Logic_sd_DeadEnd,
+			main_region_Robot_Logic_Robot_Logic_sd__final_,
 			main_region_Help_from_Cloud,
 			main_region_Help_from_Cloud_Help_from_Cloud_sd_Send,
 			main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message,
@@ -61,10 +63,10 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 				sc_boolean isRaised_message_sent();
 				
 				/*! Gets the value of the variable 'message' that is defined in the interface scope 'Comm'. */ 
-				sc_string get_message();
+				sc_integer get_message();
 				
 				/*! Sets the value of the variable 'message' that is defined in the interface scope 'Comm'. */ 
-				void set_message(sc_string value);
+				void set_message(sc_integer value);
 				
 				/*! Gets the value of the variable 'comm' that is defined in the interface scope 'Comm'. */ 
 				sc_boolean get_comm();
@@ -77,7 +79,7 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 				friend class Robot_v1;
 				sc_boolean message_received_raised;
 				sc_boolean message_sent_raised;
-				sc_string message;
+				sc_integer message;
 				sc_boolean comm;
 		};
 		
@@ -86,9 +88,9 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 			public:
 				virtual ~SCI_Comm_OCB() = 0;
 				
-				virtual sc_integer sendMessage(sc_string s1) = 0;
+				virtual sc_integer sendMessage(sc_integer s1, sc_integer x, sc_integer y) = 0;
 				
-				virtual sc_string waitMessage() = 0;
+				virtual sc_integer waitMessage() = 0;
 				
 				virtual sc_string getPath() = 0;
 		};
@@ -170,13 +172,13 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 			public:
 				virtual ~SCI_Sensor_OCB() = 0;
 				
-				virtual sc_boolean updateUp() = 0;
+				virtual sc_boolean updateUp(sc_integer x, sc_integer y) = 0;
 				
-				virtual sc_boolean updateDown() = 0;
+				virtual sc_boolean updateDown(sc_integer x, sc_integer y) = 0;
 				
-				virtual sc_boolean updateLeft() = 0;
+				virtual sc_boolean updateLeft(sc_integer x, sc_integer y) = 0;
 				
-				virtual sc_boolean updateRight() = 0;
+				virtual sc_boolean updateRight(sc_integer x, sc_integer y) = 0;
 		};
 		
 		/*! Set the working instance of the operation callback interface 'SCI_Sensor_OCB'. */
@@ -345,6 +347,8 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 		void react_main_region_Robot_Logic_Robot_Logic_sd_Up();
 		void react_main_region_Robot_Logic_Robot_Logic_sd_Right();
 		void react_main_region_Robot_Logic_Robot_Logic_sd_Check_goals();
+		void react_main_region_Robot_Logic_Robot_Logic_sd_DeadEnd();
+		void react_main_region_Robot_Logic_Robot_Logic_sd__final_();
 		void react_main_region_Help_from_Cloud_Help_from_Cloud_sd_Send();
 		void react_main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message();
 		void react_main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received();

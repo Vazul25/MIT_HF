@@ -4,10 +4,6 @@
 /*! \file Implementation of the state machine 'robot_v1'
 */
 
-//-----------------------
-//Do not touch
-//-----------------------
-
 Robot_v1::Robot_v1() {
 	
 	ifaceComm_OCB = null;
@@ -39,7 +35,7 @@ void Robot_v1::init()
 	clearOutEvents();
 	
 	/* Default init sequence for statechart robot_v1 */
-	ifaceComm.message = "";
+	ifaceComm.message = 0;
 	ifaceComm.comm = false;
 	ifaceSensor.up = false;
 	ifaceSensor.down = false;
@@ -141,6 +137,18 @@ void Robot_v1::exit()
 		}
 		case main_region_Robot_Logic_Robot_Logic_sd_Check_goals : {
 			/* Default exit sequence for state Check_goals */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd_DeadEnd : {
+			/* Default exit sequence for state DeadEnd */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd__final_ : {
+			/* Default exit sequence for final state. */
 			stateConfVector[0] = Robot_v1_last_state;
 			stateConfVectorPosition = 0;
 			break;
@@ -310,6 +318,14 @@ void Robot_v1::runCycle() {
 			react_main_region_Robot_Logic_Robot_Logic_sd_Check_goals();
 			break;
 		}
+		case main_region_Robot_Logic_Robot_Logic_sd_DeadEnd : {
+			react_main_region_Robot_Logic_Robot_Logic_sd_DeadEnd();
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd__final_ : {
+			react_main_region_Robot_Logic_Robot_Logic_sd__final_();
+			break;
+		}
 		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Send : {
 			react_main_region_Help_from_Cloud_Help_from_Cloud_sd_Send();
 			break;
@@ -440,7 +456,7 @@ sc_boolean Robot_v1::isActive(Robot_v1States state) {
 			);
 		case main_region_Robot_Logic : 
 			return (sc_boolean) (stateConfVector[0] >= main_region_Robot_Logic
-				&& stateConfVector[0] <= main_region_Robot_Logic_Robot_Logic_sd_Check_goals);
+				&& stateConfVector[0] <= main_region_Robot_Logic_Robot_Logic_sd__final_);
 		case main_region_Robot_Logic_Robot_Logic_sd_Init : 
 			return (sc_boolean) (stateConfVector[0] == main_region_Robot_Logic_Robot_Logic_sd_Init
 			);
@@ -455,6 +471,12 @@ sc_boolean Robot_v1::isActive(Robot_v1States state) {
 			);
 		case main_region_Robot_Logic_Robot_Logic_sd_Check_goals : 
 			return (sc_boolean) (stateConfVector[0] == main_region_Robot_Logic_Robot_Logic_sd_Check_goals
+			);
+		case main_region_Robot_Logic_Robot_Logic_sd_DeadEnd : 
+			return (sc_boolean) (stateConfVector[0] == main_region_Robot_Logic_Robot_Logic_sd_DeadEnd
+			);
+		case main_region_Robot_Logic_Robot_Logic_sd__final_ : 
+			return (sc_boolean) (stateConfVector[0] == main_region_Robot_Logic_Robot_Logic_sd__final_
 			);
 		case main_region_Help_from_Cloud : 
 			return (sc_boolean) (stateConfVector[0] >= main_region_Help_from_Cloud
@@ -524,11 +546,11 @@ sc_boolean Robot_v1::SCI_Comm::isRaised_message_sent() {
 }
 
 
-sc_string Robot_v1::SCI_Comm::get_message() {
+sc_integer Robot_v1::SCI_Comm::get_message() {
 	return message;
 }
 
-void Robot_v1::SCI_Comm::set_message(sc_string value) {
+void Robot_v1::SCI_Comm::set_message(sc_integer value) {
 	message = value;
 }
 
@@ -733,10 +755,10 @@ void Robot_v1::shenseq_SequenceImpl() {
 		case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update : {
 			/* 'default' enter sequence for state Sensor_update */
 			/* Entry action for state 'Sensor_update'. */
-			ifaceSensor.up = ifaceSensor_OCB->updateUp();
-			ifaceSensor.down = ifaceSensor_OCB->updateDown();
-			ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-			ifaceSensor.right = ifaceSensor_OCB->updateRight();
+			ifaceSensor.up = ifaceSensor_OCB->updateUp(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+			ifaceSensor.down = ifaceSensor_OCB->updateDown(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+			ifaceSensor.left = ifaceSensor_OCB->updateLeft(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+			ifaceSensor.right = ifaceSensor_OCB->updateRight(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
 			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Sensor_update;
 			stateConfVectorPosition = 0;
 			historyVector[0] = stateConfVector[0];
@@ -769,6 +791,15 @@ void Robot_v1::shenseq_SequenceImpl() {
 			historyVector[0] = stateConfVector[0];
 			break;
 		}
+		case main_region_Robot_Logic_Robot_Logic_sd_DeadEnd : {
+			/* 'default' enter sequence for state DeadEnd */
+			/* Entry action for state 'DeadEnd'. */
+			ifaceInternalSCI.deadEnd_raised = true;
+			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_DeadEnd;
+			stateConfVectorPosition = 0;
+			historyVector[0] = stateConfVector[0];
+			break;
+		}
 		default: break;
 	}
 }
@@ -787,8 +818,8 @@ void Robot_v1::react_main_region_Start() {
 		/* Default react sequence for initial entry  */
 		/* 'default' enter sequence for state Start */
 		/* Entry action for state 'Start'. */
-		ifaceComm_OCB->sendMessage("Robot online");
-		ifaceComm.message = "";
+		ifaceComm_OCB->sendMessage(2, 0, 0);
+		ifaceComm.message = 0;
 		stateConfVector[0] = main_region_Comm_test_Comm_test_sd_Start;
 		stateConfVectorPosition = 0;
 	} 
@@ -846,8 +877,8 @@ void Robot_v1::react_main_region_Comm_test_Comm_test_sd_Start() {
 		ifaceComm.message_sent_raised = true;
 		/* 'default' enter sequence for state WaitForCloud */
 		/* Entry action for state 'WaitForCloud'. */
-		timer->setTimer(this, &timeEvents[1], 2 * 1000, false);
-		ifaceComm.message = ifaceComm_OCB->waitMessage();
+		timer->setTimer(this, &timeEvents[1], 5 * 1000, false);
+		ifaceComm_OCB->waitMessage();
 		stateConfVector[0] = main_region_Comm_test_Comm_test_sd_WaitForCloud;
 		stateConfVectorPosition = 0;
 	}
@@ -899,34 +930,28 @@ void Robot_v1::react_main_region_Comm_test_Comm_test_sd_WaitForCloud() {
 			historyVector[0] = stateConfVector[0];
 		} 
 	}  else {
-		if ((strcmp(ifaceComm.message, "Cloud online") == 0)
-		) { 
+		if (timeEvents[1]) { 
 			/* Default exit sequence for state WaitForCloud */
 			stateConfVector[0] = Robot_v1_last_state;
 			stateConfVectorPosition = 0;
 			/* Exit action for state 'WaitForCloud'. */
 			timer->unsetTimer(this, &timeEvents[1]);
-			/* 'default' enter sequence for state Link_Established */
-			/* Entry action for state 'Link_Established'. */
-			ifaceComm.comm = true;
-			stateConfVector[0] = main_region_Comm_test_Comm_test_sd_Link_Established;
-			stateConfVectorPosition = 0;
-		}  else {
-			if ((timeEvents[1]) && (strcmp(ifaceComm.message, "") == 0)
-			) { 
-				/* Default exit sequence for state WaitForCloud */
-				stateConfVector[0] = Robot_v1_last_state;
+			/* The reactions of state null. */
+			if (ifaceComm.message == 1) { 
+				/* 'default' enter sequence for state Link_Established */
+				/* Entry action for state 'Link_Established'. */
+				ifaceComm.comm = true;
+				stateConfVector[0] = main_region_Comm_test_Comm_test_sd_Link_Established;
 				stateConfVectorPosition = 0;
-				/* Exit action for state 'WaitForCloud'. */
-				timer->unsetTimer(this, &timeEvents[1]);
-				/* 'default' enter sequence for state Start */
-				/* Entry action for state 'Start'. */
-				ifaceComm_OCB->sendMessage("Robot online");
-				ifaceComm.message = "";
-				stateConfVector[0] = main_region_Comm_test_Comm_test_sd_Start;
+			}  else {
+				/* 'default' enter sequence for state WaitForCloud */
+				/* Entry action for state 'WaitForCloud'. */
+				timer->setTimer(this, &timeEvents[1], 5 * 1000, false);
+				ifaceComm_OCB->waitMessage();
+				stateConfVector[0] = main_region_Comm_test_Comm_test_sd_WaitForCloud;
 				stateConfVectorPosition = 0;
-			} 
-		}
+			}
+		} 
 	}
 }
 
@@ -982,149 +1007,46 @@ void Robot_v1::react_main_region_Comm_test_Comm_test_sd_Link_Established() {
 /* The reactions of state Init. */
 void Robot_v1::react_main_region_Robot_Logic_Robot_Logic_sd_Init() {
 	/* The reactions of state Init. */
-	if (ifaceInternalSCI.deadEnd_raised) { 
-		/* Default exit sequence for state Robot_Logic */
-		/* Default exit sequence for region Robot_Logic_sd */
-		/* Handle exit of all possible states (of Robot_Logic_sd) at position 0... */
-		switch(stateConfVector[ 0 ]) {
-			case main_region_Robot_Logic_Robot_Logic_sd_Init : {
-				/* Default exit sequence for state Init */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update : {
-				/* Default exit sequence for state Sensor_update */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Up : {
-				/* Default exit sequence for state Up */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Up'. */
-				timer->unsetTimer(this, &timeEvents[2]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Right : {
-				/* Default exit sequence for state Right */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Right'. */
-				timer->unsetTimer(this, &timeEvents[3]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Check_goals : {
-				/* Default exit sequence for state Check_goals */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			default: break;
-		}
-		/* 'default' enter sequence for state Help_from_Cloud */
-		/* 'default' enter sequence for region Help_from_Cloud_sd */
-		/* Default react sequence for initial entry  */
-		/* 'default' enter sequence for state Send */
-		/* Entry action for state 'Send'. */
-		ifaceComm_OCB->sendMessage("DeadEnd " + ifaceInternalSCI.pos_x + " " + ifaceInternalSCI.pos_y);
-		ifaceComm.message = "";
-		stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Send;
-		stateConfVectorPosition = 0;
-	}  else {
-		/* Default exit sequence for state Init */
-		stateConfVector[0] = Robot_v1_last_state;
-		stateConfVectorPosition = 0;
-		/* 'default' enter sequence for state Check_goals */
-		stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Check_goals;
-		stateConfVectorPosition = 0;
-		historyVector[0] = stateConfVector[0];
-	}
+	/* Default exit sequence for state Init */
+	stateConfVector[0] = Robot_v1_last_state;
+	stateConfVectorPosition = 0;
+	/* 'default' enter sequence for state Check_goals */
+	stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Check_goals;
+	stateConfVectorPosition = 0;
+	historyVector[0] = stateConfVector[0];
 }
 
 /* The reactions of state Sensor_update. */
 void Robot_v1::react_main_region_Robot_Logic_Robot_Logic_sd_Sensor_update() {
 	/* The reactions of state Sensor_update. */
-	if (ifaceInternalSCI.deadEnd_raised) { 
-		/* Default exit sequence for state Robot_Logic */
-		/* Default exit sequence for region Robot_Logic_sd */
-		/* Handle exit of all possible states (of Robot_Logic_sd) at position 0... */
-		switch(stateConfVector[ 0 ]) {
-			case main_region_Robot_Logic_Robot_Logic_sd_Init : {
-				/* Default exit sequence for state Init */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update : {
-				/* Default exit sequence for state Sensor_update */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Up : {
-				/* Default exit sequence for state Up */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Up'. */
-				timer->unsetTimer(this, &timeEvents[2]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Right : {
-				/* Default exit sequence for state Right */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Right'. */
-				timer->unsetTimer(this, &timeEvents[3]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Check_goals : {
-				/* Default exit sequence for state Check_goals */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			default: break;
-		}
-		/* 'default' enter sequence for state Help_from_Cloud */
-		/* 'default' enter sequence for region Help_from_Cloud_sd */
-		/* Default react sequence for initial entry  */
-		/* 'default' enter sequence for state Send */
-		/* Entry action for state 'Send'. */
-		ifaceComm_OCB->sendMessage("DeadEnd " + ifaceInternalSCI.pos_x + " " + ifaceInternalSCI.pos_y);
-		ifaceComm.message = "";
-		stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Send;
+	/* Default exit sequence for state Sensor_update */
+	stateConfVector[0] = Robot_v1_last_state;
+	stateConfVectorPosition = 0;
+	/* The reactions of state null. */
+	if (ifaceSensor.up == true && ifaceSensor.right == false) { 
+		/* 'default' enter sequence for state Right */
+		/* Entry action for state 'Right'. */
+		timer->setTimer(this, &timeEvents[3], 1 * 1000, false);
+		ifaceControl.goRight_raised = true;
+		stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Right;
 		stateConfVectorPosition = 0;
+		historyVector[0] = stateConfVector[0];
 	}  else {
-		/* Default exit sequence for state Sensor_update */
-		stateConfVector[0] = Robot_v1_last_state;
-		stateConfVectorPosition = 0;
-		/* The reactions of state null. */
-		if (ifaceSensor.up == true && ifaceSensor.right == false) { 
-			/* 'default' enter sequence for state Right */
-			/* Entry action for state 'Right'. */
-			timer->setTimer(this, &timeEvents[3], 1 * 1000, false);
-			ifaceControl.goRight_raised = true;
-			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Right;
+		if (ifaceSensor.up == false) { 
+			/* 'default' enter sequence for state Up */
+			/* Entry action for state 'Up'. */
+			timer->setTimer(this, &timeEvents[2], 1 * 1000, false);
+			ifaceControl.goUp_raised = true;
+			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Up;
 			stateConfVectorPosition = 0;
 			historyVector[0] = stateConfVector[0];
 		}  else {
-			if (ifaceSensor.up == false) { 
-				/* 'default' enter sequence for state Up */
-				/* Entry action for state 'Up'. */
-				timer->setTimer(this, &timeEvents[2], 1 * 1000, false);
-				ifaceControl.goUp_raised = true;
-				stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Up;
-				stateConfVectorPosition = 0;
-				historyVector[0] = stateConfVector[0];
-			}  else {
-				ifaceInternalSCI.deadEnd_raised = true;
-				/* 'default' enter sequence for state Check_goals */
-				stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Check_goals;
-				stateConfVectorPosition = 0;
-				historyVector[0] = stateConfVector[0];
-			}
+			/* 'default' enter sequence for state DeadEnd */
+			/* Entry action for state 'DeadEnd'. */
+			ifaceInternalSCI.deadEnd_raised = true;
+			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_DeadEnd;
+			stateConfVectorPosition = 0;
+			historyVector[0] = stateConfVector[0];
 		}
 	}
 }
@@ -1132,393 +1054,222 @@ void Robot_v1::react_main_region_Robot_Logic_Robot_Logic_sd_Sensor_update() {
 /* The reactions of state Up. */
 void Robot_v1::react_main_region_Robot_Logic_Robot_Logic_sd_Up() {
 	/* The reactions of state Up. */
-	if (ifaceInternalSCI.deadEnd_raised) { 
-		/* Default exit sequence for state Robot_Logic */
-		/* Default exit sequence for region Robot_Logic_sd */
-		/* Handle exit of all possible states (of Robot_Logic_sd) at position 0... */
-		switch(stateConfVector[ 0 ]) {
-			case main_region_Robot_Logic_Robot_Logic_sd_Init : {
-				/* Default exit sequence for state Init */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update : {
-				/* Default exit sequence for state Sensor_update */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Up : {
-				/* Default exit sequence for state Up */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Up'. */
-				timer->unsetTimer(this, &timeEvents[2]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Right : {
-				/* Default exit sequence for state Right */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Right'. */
-				timer->unsetTimer(this, &timeEvents[3]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Check_goals : {
-				/* Default exit sequence for state Check_goals */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			default: break;
-		}
-		/* 'default' enter sequence for state Help_from_Cloud */
-		/* 'default' enter sequence for region Help_from_Cloud_sd */
-		/* Default react sequence for initial entry  */
-		/* 'default' enter sequence for state Send */
-		/* Entry action for state 'Send'. */
-		ifaceComm_OCB->sendMessage("DeadEnd " + ifaceInternalSCI.pos_x + " " + ifaceInternalSCI.pos_y);
-		ifaceComm.message = "";
-		stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Send;
+	if (timeEvents[2]) { 
+		/* Default exit sequence for state Up */
+		stateConfVector[0] = Robot_v1_last_state;
 		stateConfVectorPosition = 0;
-	}  else {
-		if (timeEvents[2]) { 
-			/* Default exit sequence for state Up */
-			stateConfVector[0] = Robot_v1_last_state;
-			stateConfVectorPosition = 0;
-			/* Exit action for state 'Up'. */
-			timer->unsetTimer(this, &timeEvents[2]);
-			/* 'default' enter sequence for state Sensor_update */
-			/* Entry action for state 'Sensor_update'. */
-			ifaceSensor.up = ifaceSensor_OCB->updateUp();
-			ifaceSensor.down = ifaceSensor_OCB->updateDown();
-			ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-			ifaceSensor.right = ifaceSensor_OCB->updateRight();
-			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Sensor_update;
-			stateConfVectorPosition = 0;
-			historyVector[0] = stateConfVector[0];
-		} 
-	}
+		/* Exit action for state 'Up'. */
+		timer->unsetTimer(this, &timeEvents[2]);
+		/* 'default' enter sequence for state Check_goals */
+		stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Check_goals;
+		stateConfVectorPosition = 0;
+		historyVector[0] = stateConfVector[0];
+	} 
 }
 
 /* The reactions of state Right. */
 void Robot_v1::react_main_region_Robot_Logic_Robot_Logic_sd_Right() {
 	/* The reactions of state Right. */
-	if (ifaceInternalSCI.deadEnd_raised) { 
-		/* Default exit sequence for state Robot_Logic */
-		/* Default exit sequence for region Robot_Logic_sd */
-		/* Handle exit of all possible states (of Robot_Logic_sd) at position 0... */
-		switch(stateConfVector[ 0 ]) {
-			case main_region_Robot_Logic_Robot_Logic_sd_Init : {
-				/* Default exit sequence for state Init */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update : {
-				/* Default exit sequence for state Sensor_update */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Up : {
-				/* Default exit sequence for state Up */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Up'. */
-				timer->unsetTimer(this, &timeEvents[2]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Right : {
-				/* Default exit sequence for state Right */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Right'. */
-				timer->unsetTimer(this, &timeEvents[3]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Check_goals : {
-				/* Default exit sequence for state Check_goals */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			default: break;
-		}
-		/* 'default' enter sequence for state Help_from_Cloud */
-		/* 'default' enter sequence for region Help_from_Cloud_sd */
-		/* Default react sequence for initial entry  */
-		/* 'default' enter sequence for state Send */
-		/* Entry action for state 'Send'. */
-		ifaceComm_OCB->sendMessage("DeadEnd " + ifaceInternalSCI.pos_x + " " + ifaceInternalSCI.pos_y);
-		ifaceComm.message = "";
-		stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Send;
+	if (timeEvents[3]) { 
+		/* Default exit sequence for state Right */
+		stateConfVector[0] = Robot_v1_last_state;
 		stateConfVectorPosition = 0;
-	}  else {
-		if (timeEvents[3]) { 
-			/* Default exit sequence for state Right */
-			stateConfVector[0] = Robot_v1_last_state;
-			stateConfVectorPosition = 0;
-			/* Exit action for state 'Right'. */
-			timer->unsetTimer(this, &timeEvents[3]);
-			/* 'default' enter sequence for state Sensor_update */
-			/* Entry action for state 'Sensor_update'. */
-			ifaceSensor.up = ifaceSensor_OCB->updateUp();
-			ifaceSensor.down = ifaceSensor_OCB->updateDown();
-			ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-			ifaceSensor.right = ifaceSensor_OCB->updateRight();
-			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Sensor_update;
-			stateConfVectorPosition = 0;
-			historyVector[0] = stateConfVector[0];
-		} 
-	}
+		/* Exit action for state 'Right'. */
+		timer->unsetTimer(this, &timeEvents[3]);
+		/* 'default' enter sequence for state Check_goals */
+		stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Check_goals;
+		stateConfVectorPosition = 0;
+		historyVector[0] = stateConfVector[0];
+	} 
 }
 
 /* The reactions of state Check_goals. */
 void Robot_v1::react_main_region_Robot_Logic_Robot_Logic_sd_Check_goals() {
 	/* The reactions of state Check_goals. */
-	if (ifaceInternalSCI.deadEnd_raised) { 
-		/* Default exit sequence for state Robot_Logic */
-		/* Default exit sequence for region Robot_Logic_sd */
-		/* Handle exit of all possible states (of Robot_Logic_sd) at position 0... */
-		switch(stateConfVector[ 0 ]) {
-			case main_region_Robot_Logic_Robot_Logic_sd_Init : {
-				/* Default exit sequence for state Init */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update : {
-				/* Default exit sequence for state Sensor_update */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Up : {
-				/* Default exit sequence for state Up */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Up'. */
-				timer->unsetTimer(this, &timeEvents[2]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Right : {
-				/* Default exit sequence for state Right */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Right'. */
-				timer->unsetTimer(this, &timeEvents[3]);
-				break;
-			}
-			case main_region_Robot_Logic_Robot_Logic_sd_Check_goals : {
-				/* Default exit sequence for state Check_goals */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			default: break;
-		}
-		/* 'default' enter sequence for state Help_from_Cloud */
-		/* 'default' enter sequence for region Help_from_Cloud_sd */
-		/* Default react sequence for initial entry  */
-		/* 'default' enter sequence for state Send */
-		/* Entry action for state 'Send'. */
-		ifaceComm_OCB->sendMessage("DeadEnd " + ifaceInternalSCI.pos_x + " " + ifaceInternalSCI.pos_y);
-		ifaceComm.message = "";
-		stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Send;
+	if (ifaceInternalSCI.pos_x != ifaceInternalSCI.goal_x || ifaceInternalSCI.pos_y != ifaceInternalSCI.goal_y) { 
+		/* Default exit sequence for state Check_goals */
+		stateConfVector[0] = Robot_v1_last_state;
 		stateConfVectorPosition = 0;
+		/* 'default' enter sequence for state Sensor_update */
+		/* Entry action for state 'Sensor_update'. */
+		ifaceSensor.up = ifaceSensor_OCB->updateUp(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.down = ifaceSensor_OCB->updateDown(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.left = ifaceSensor_OCB->updateLeft(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.right = ifaceSensor_OCB->updateRight(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Sensor_update;
+		stateConfVectorPosition = 0;
+		historyVector[0] = stateConfVector[0];
 	}  else {
-		if (ifaceInternalSCI.pos_x != ifaceInternalSCI.goal_x || ifaceInternalSCI.pos_y != ifaceInternalSCI.goal_y) { 
-			/* Default exit sequence for state Check_goals */
-			stateConfVector[0] = Robot_v1_last_state;
-			stateConfVectorPosition = 0;
-			/* 'default' enter sequence for state Sensor_update */
-			/* Entry action for state 'Sensor_update'. */
-			ifaceSensor.up = ifaceSensor_OCB->updateUp();
-			ifaceSensor.down = ifaceSensor_OCB->updateDown();
-			ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-			ifaceSensor.right = ifaceSensor_OCB->updateRight();
-			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Sensor_update;
-			stateConfVectorPosition = 0;
-			historyVector[0] = stateConfVector[0];
-		}  else {
-			/* Default exit sequence for state Check_goals */
-			stateConfVector[0] = Robot_v1_last_state;
-			stateConfVectorPosition = 0;
-		}
+		/* Default exit sequence for state Check_goals */
+		stateConfVector[0] = Robot_v1_last_state;
+		stateConfVectorPosition = 0;
+		/* Default enter sequence for state null */
+		stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd__final_;
+		stateConfVectorPosition = 0;
 	}
+}
+
+/* The reactions of state DeadEnd. */
+void Robot_v1::react_main_region_Robot_Logic_Robot_Logic_sd_DeadEnd() {
+	/* The reactions of state DeadEnd. */
+	/* Default exit sequence for state DeadEnd */
+	stateConfVector[0] = Robot_v1_last_state;
+	stateConfVectorPosition = 0;
+	/* The reactions of exit default. */
+	/* Default exit sequence for state Robot_Logic */
+	/* Default exit sequence for region Robot_Logic_sd */
+	/* Handle exit of all possible states (of Robot_Logic_sd) at position 0... */
+	switch(stateConfVector[ 0 ]) {
+		case main_region_Robot_Logic_Robot_Logic_sd_Init : {
+			/* Default exit sequence for state Init */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update : {
+			/* Default exit sequence for state Sensor_update */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd_Up : {
+			/* Default exit sequence for state Up */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			/* Exit action for state 'Up'. */
+			timer->unsetTimer(this, &timeEvents[2]);
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd_Right : {
+			/* Default exit sequence for state Right */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			/* Exit action for state 'Right'. */
+			timer->unsetTimer(this, &timeEvents[3]);
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd_Check_goals : {
+			/* Default exit sequence for state Check_goals */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd_DeadEnd : {
+			/* Default exit sequence for state DeadEnd */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
+		}
+		case main_region_Robot_Logic_Robot_Logic_sd__final_ : {
+			/* Default exit sequence for final state. */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
+		}
+		default: break;
+	}
+	/* 'default' enter sequence for state Help_from_Cloud */
+	/* 'default' enter sequence for region Help_from_Cloud_sd */
+	/* Default react sequence for initial entry  */
+	/* 'default' enter sequence for state Send */
+	/* Entry action for state 'Send'. */
+	ifaceComm_OCB->sendMessage(3, ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+	ifaceComm.message = 0;
+	stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Send;
+	stateConfVectorPosition = 0;
+}
+
+/* The reactions of state null. */
+void Robot_v1::react_main_region_Robot_Logic_Robot_Logic_sd__final_() {
+	/* The reactions of state null. */
 }
 
 /* The reactions of state Send. */
 void Robot_v1::react_main_region_Help_from_Cloud_Help_from_Cloud_sd_Send() {
 	/* The reactions of state Send. */
-	if (ifaceInternalSCI.PathReceived_raised) { 
-		/* Default exit sequence for state Help_from_Cloud */
-		/* Default exit sequence for region Help_from_Cloud_sd */
-		/* Handle exit of all possible states (of Help_from_Cloud_sd) at position 0... */
-		switch(stateConfVector[ 0 ]) {
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Send : {
-				/* Default exit sequence for state Send */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message : {
-				/* Default exit sequence for state Wait_for_Message */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Wait_for_Message'. */
-				timer->unsetTimer(this, &timeEvents[4]);
-				break;
-			}
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received : {
-				/* Default exit sequence for state Help_received */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			default: break;
-		}
-		/* 'default' enter sequence for state Path_Walking */
-		/* 'default' enter sequence for region Path_Walking_sd */
-		/* Default react sequence for initial entry  */
-		/* 'default' enter sequence for state Init */
-		/* Entry action for state 'Init'. */
-		timer->setTimer(this, &timeEvents[5], 1 * 1000, false);
-		ifaceInternalSCI.index = 0;
-		ifaceInternalSCI.nextStep = 0;
-		stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Init;
-		stateConfVectorPosition = 0;
-	}  else {
-		/* Default exit sequence for state Send */
-		stateConfVector[0] = Robot_v1_last_state;
-		stateConfVectorPosition = 0;
-		ifaceComm.message_sent_raised = true;
-		/* 'default' enter sequence for state Wait_for_Message */
-		/* Entry action for state 'Wait_for_Message'. */
-		timer->setTimer(this, &timeEvents[4], 2 * 1000, false);
-		ifaceComm.message = ifaceComm_OCB->waitMessage();
-		stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message;
-		stateConfVectorPosition = 0;
-	}
+	/* Default exit sequence for state Send */
+	stateConfVector[0] = Robot_v1_last_state;
+	stateConfVectorPosition = 0;
+	ifaceComm.message_sent_raised = true;
+	/* 'default' enter sequence for state Wait_for_Message */
+	/* Entry action for state 'Wait_for_Message'. */
+	timer->setTimer(this, &timeEvents[4], 5 * 1000, false);
+	ifaceComm.message = ifaceComm_OCB->waitMessage();
+	stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message;
+	stateConfVectorPosition = 0;
 }
 
 /* The reactions of state Wait_for_Message. */
 void Robot_v1::react_main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message() {
 	/* The reactions of state Wait_for_Message. */
-	if (ifaceInternalSCI.PathReceived_raised) { 
-		/* Default exit sequence for state Help_from_Cloud */
-		/* Default exit sequence for region Help_from_Cloud_sd */
-		/* Handle exit of all possible states (of Help_from_Cloud_sd) at position 0... */
-		switch(stateConfVector[ 0 ]) {
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Send : {
-				/* Default exit sequence for state Send */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message : {
-				/* Default exit sequence for state Wait_for_Message */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Wait_for_Message'. */
-				timer->unsetTimer(this, &timeEvents[4]);
-				break;
-			}
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received : {
-				/* Default exit sequence for state Help_received */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			default: break;
-		}
-		/* 'default' enter sequence for state Path_Walking */
-		/* 'default' enter sequence for region Path_Walking_sd */
-		/* Default react sequence for initial entry  */
-		/* 'default' enter sequence for state Init */
-		/* Entry action for state 'Init'. */
-		timer->setTimer(this, &timeEvents[5], 1 * 1000, false);
-		ifaceInternalSCI.index = 0;
-		ifaceInternalSCI.nextStep = 0;
-		stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Init;
+	if (timeEvents[4]) { 
+		/* Default exit sequence for state Wait_for_Message */
+		stateConfVector[0] = Robot_v1_last_state;
 		stateConfVectorPosition = 0;
-	}  else {
-		if ((timeEvents[4]) && (strcmp(ifaceComm.message, "") == 0)
-		) { 
-			/* Default exit sequence for state Wait_for_Message */
-			stateConfVector[0] = Robot_v1_last_state;
-			stateConfVectorPosition = 0;
-			/* Exit action for state 'Wait_for_Message'. */
-			timer->unsetTimer(this, &timeEvents[4]);
-			/* 'default' enter sequence for state Send */
-			/* Entry action for state 'Send'. */
-			ifaceComm_OCB->sendMessage("DeadEnd " + ifaceInternalSCI.pos_x + " " + ifaceInternalSCI.pos_y);
-			ifaceComm.message = "";
-			stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Send;
+		/* Exit action for state 'Wait_for_Message'. */
+		timer->unsetTimer(this, &timeEvents[4]);
+		/* The reactions of state null. */
+		if (ifaceComm.message == 4) { 
+			/* 'default' enter sequence for state Help_received */
+			/* Entry action for state 'Help_received'. */
+			ifaceInternalSCI.deadEndPath = ifaceComm_OCB->getPath();
+			ifaceInternalSCI.PathReceived_raised = true;
+			stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received;
 			stateConfVectorPosition = 0;
 		}  else {
-			if ((strcmp(ifaceComm.message, "Path sended") == 0)
-			) { 
-				/* Default exit sequence for state Wait_for_Message */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Wait_for_Message'. */
-				timer->unsetTimer(this, &timeEvents[4]);
-				/* 'default' enter sequence for state Help_received */
-				/* Entry action for state 'Help_received'. */
-				ifaceInternalSCI.deadEndPath = ifaceComm_OCB->getPath();
-				ifaceInternalSCI.PathReceived_raised = true;
-				stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received;
-				stateConfVectorPosition = 0;
-			} 
+			/* 'default' enter sequence for state Wait_for_Message */
+			/* Entry action for state 'Wait_for_Message'. */
+			timer->setTimer(this, &timeEvents[4], 5 * 1000, false);
+			ifaceComm.message = ifaceComm_OCB->waitMessage();
+			stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message;
+			stateConfVectorPosition = 0;
 		}
-	}
+	} 
 }
 
 /* The reactions of state Help_received. */
 void Robot_v1::react_main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received() {
 	/* The reactions of state Help_received. */
-	if (ifaceInternalSCI.PathReceived_raised) { 
-		/* Default exit sequence for state Help_from_Cloud */
-		/* Default exit sequence for region Help_from_Cloud_sd */
-		/* Handle exit of all possible states (of Help_from_Cloud_sd) at position 0... */
-		switch(stateConfVector[ 0 ]) {
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Send : {
-				/* Default exit sequence for state Send */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message : {
-				/* Default exit sequence for state Wait_for_Message */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				/* Exit action for state 'Wait_for_Message'. */
-				timer->unsetTimer(this, &timeEvents[4]);
-				break;
-			}
-			case main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received : {
-				/* Default exit sequence for state Help_received */
-				stateConfVector[0] = Robot_v1_last_state;
-				stateConfVectorPosition = 0;
-				break;
-			}
-			default: break;
+	/* Default exit sequence for state Help_received */
+	stateConfVector[0] = Robot_v1_last_state;
+	stateConfVectorPosition = 0;
+	/* The reactions of exit default. */
+	/* Default exit sequence for state Help_from_Cloud */
+	/* Default exit sequence for region Help_from_Cloud_sd */
+	/* Handle exit of all possible states (of Help_from_Cloud_sd) at position 0... */
+	switch(stateConfVector[ 0 ]) {
+		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Send : {
+			/* Default exit sequence for state Send */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
 		}
-		/* 'default' enter sequence for state Path_Walking */
-		/* 'default' enter sequence for region Path_Walking_sd */
-		/* Default react sequence for initial entry  */
-		/* 'default' enter sequence for state Init */
-		/* Entry action for state 'Init'. */
-		timer->setTimer(this, &timeEvents[5], 1 * 1000, false);
-		ifaceInternalSCI.index = 0;
-		ifaceInternalSCI.nextStep = 0;
-		stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Init;
-		stateConfVectorPosition = 0;
-	}  else {
+		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message : {
+			/* Default exit sequence for state Wait_for_Message */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			/* Exit action for state 'Wait_for_Message'. */
+			timer->unsetTimer(this, &timeEvents[4]);
+			break;
+		}
+		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received : {
+			/* Default exit sequence for state Help_received */
+			stateConfVector[0] = Robot_v1_last_state;
+			stateConfVectorPosition = 0;
+			break;
+		}
+		default: break;
 	}
+	/* 'default' enter sequence for state Path_Walking */
+	/* 'default' enter sequence for region Path_Walking_sd */
+	/* Default react sequence for initial entry  */
+	/* 'default' enter sequence for state Init */
+	/* Entry action for state 'Init'. */
+	timer->setTimer(this, &timeEvents[5], 1 * 1000, false);
+	ifaceInternalSCI.index = 0;
+	ifaceInternalSCI.nextStep = 0;
+	stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Init;
+	stateConfVectorPosition = 0;
 }
 
 /* The reactions of state Sensor_update. */
@@ -1577,10 +1328,10 @@ void Robot_v1::react_main_region_Path_Walking_Path_Walking_sd_Next_Step() {
 					}  else {
 						/* 'default' enter sequence for state Sensor_update */
 						/* Entry action for state 'Sensor_update'. */
-						ifaceSensor.up = ifaceSensor_OCB->updateUp();
-						ifaceSensor.down = ifaceSensor_OCB->updateDown();
-						ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-						ifaceSensor.right = ifaceSensor_OCB->updateRight();
+						ifaceSensor.up = ifaceSensor_OCB->updateUp(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+						ifaceSensor.down = ifaceSensor_OCB->updateDown(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+						ifaceSensor.left = ifaceSensor_OCB->updateLeft(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+						ifaceSensor.right = ifaceSensor_OCB->updateRight(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
 						stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Sensor_update;
 						stateConfVectorPosition = 0;
 					}
@@ -1681,10 +1432,10 @@ void Robot_v1::react_main_region_Path_Walking_Path_Walking_sd_Init() {
 		timer->unsetTimer(this, &timeEvents[5]);
 		/* 'default' enter sequence for state Sensor_update */
 		/* Entry action for state 'Sensor_update'. */
-		ifaceSensor.up = ifaceSensor_OCB->updateUp();
-		ifaceSensor.down = ifaceSensor_OCB->updateDown();
-		ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-		ifaceSensor.right = ifaceSensor_OCB->updateRight();
+		ifaceSensor.up = ifaceSensor_OCB->updateUp(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.down = ifaceSensor_OCB->updateDown(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.left = ifaceSensor_OCB->updateLeft(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.right = ifaceSensor_OCB->updateRight(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
 		stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Sensor_update;
 		stateConfVectorPosition = 0;
 	} 
@@ -1701,10 +1452,10 @@ void Robot_v1::react_main_region_Path_Walking_Path_Walking_sd_Up() {
 		timer->unsetTimer(this, &timeEvents[6]);
 		/* 'default' enter sequence for state Sensor_update */
 		/* Entry action for state 'Sensor_update'. */
-		ifaceSensor.up = ifaceSensor_OCB->updateUp();
-		ifaceSensor.down = ifaceSensor_OCB->updateDown();
-		ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-		ifaceSensor.right = ifaceSensor_OCB->updateRight();
+		ifaceSensor.up = ifaceSensor_OCB->updateUp(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.down = ifaceSensor_OCB->updateDown(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.left = ifaceSensor_OCB->updateLeft(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.right = ifaceSensor_OCB->updateRight(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
 		stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Sensor_update;
 		stateConfVectorPosition = 0;
 	} 
@@ -1721,10 +1472,10 @@ void Robot_v1::react_main_region_Path_Walking_Path_Walking_sd_Right() {
 		timer->unsetTimer(this, &timeEvents[7]);
 		/* 'default' enter sequence for state Sensor_update */
 		/* Entry action for state 'Sensor_update'. */
-		ifaceSensor.up = ifaceSensor_OCB->updateUp();
-		ifaceSensor.down = ifaceSensor_OCB->updateDown();
-		ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-		ifaceSensor.right = ifaceSensor_OCB->updateRight();
+		ifaceSensor.up = ifaceSensor_OCB->updateUp(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.down = ifaceSensor_OCB->updateDown(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.left = ifaceSensor_OCB->updateLeft(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.right = ifaceSensor_OCB->updateRight(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
 		stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Sensor_update;
 		stateConfVectorPosition = 0;
 	} 
@@ -1741,10 +1492,10 @@ void Robot_v1::react_main_region_Path_Walking_Path_Walking_sd_Down() {
 		timer->unsetTimer(this, &timeEvents[8]);
 		/* 'default' enter sequence for state Sensor_update */
 		/* Entry action for state 'Sensor_update'. */
-		ifaceSensor.up = ifaceSensor_OCB->updateUp();
-		ifaceSensor.down = ifaceSensor_OCB->updateDown();
-		ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-		ifaceSensor.right = ifaceSensor_OCB->updateRight();
+		ifaceSensor.up = ifaceSensor_OCB->updateUp(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.down = ifaceSensor_OCB->updateDown(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.left = ifaceSensor_OCB->updateLeft(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.right = ifaceSensor_OCB->updateRight(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
 		stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Sensor_update;
 		stateConfVectorPosition = 0;
 	} 
@@ -1761,10 +1512,10 @@ void Robot_v1::react_main_region_Path_Walking_Path_Walking_sd_Left() {
 		timer->unsetTimer(this, &timeEvents[9]);
 		/* 'default' enter sequence for state Sensor_update */
 		/* Entry action for state 'Sensor_update'. */
-		ifaceSensor.up = ifaceSensor_OCB->updateUp();
-		ifaceSensor.down = ifaceSensor_OCB->updateDown();
-		ifaceSensor.left = ifaceSensor_OCB->updateLeft();
-		ifaceSensor.right = ifaceSensor_OCB->updateRight();
+		ifaceSensor.up = ifaceSensor_OCB->updateUp(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.down = ifaceSensor_OCB->updateDown(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.left = ifaceSensor_OCB->updateLeft(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
+		ifaceSensor.right = ifaceSensor_OCB->updateRight(ifaceInternalSCI.pos_x, ifaceInternalSCI.pos_y);
 		stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Sensor_update;
 		stateConfVectorPosition = 0;
 	} 
