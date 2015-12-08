@@ -1,6 +1,7 @@
 #include "Robot_v1.h"
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 using namespace std;
 
@@ -20,6 +21,31 @@ public:
 		}
 		else return 0;
 	}
+
+	char* mtx;
+	int n, m;
+	int init_x, init_y, goal_x, goal_y;
+  
+	void process_data(){
+		ifstream myfile;
+		myfile.open("Map.txt");
+		if(myfile.is_open()){
+			String temp;
+			getline(myfile,temp);
+			n = (int)(temp[0]-'0');
+			m = (int)(temp[2]-'0');
+			getline(myfile,temp);
+			mtx = new char[n*m];
+			int j=0;
+			for(i=0;temp[i]!='\n';i++){
+				if(temp[i] == '\n') temp[i]='\0';
+			}
+			for(i=0;i<temp.size();i++){
+				if(temp[i] != ',') mtx[j++] = temp[i];
+			}
+			
+		}
+	}
 	
 	sc_integer waitMessage(){
 		ifstream myfile;
@@ -29,6 +55,7 @@ public:
 			char message = '0';
 			
 			myfile.get(message);
+			if(message == '1') process_data();
 			if(message >= '0' && message <= '4'){
 				output = (int) (message-'0');
 			}
@@ -105,6 +132,5 @@ int main()
 	setSCI_Sensor_OCB(&robot_sensor);
 	setInternalSCI_OCB(robot_util);
 
-	robot_obj
   	return 0;
 }
