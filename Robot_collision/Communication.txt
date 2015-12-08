@@ -1,4 +1,4 @@
-Comm.message
+﻿Comm.message
 	0: nem erkezett uzenet
 	1: Cloud online
 	2: Robot online
