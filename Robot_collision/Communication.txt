@@ -11,4 +11,6 @@ topic/cloud/path -> fileba irodik a bejarando utvonal
 
 topic/cloud/signal -> Comm.message valtozoba irodik (1-4)
 
+Inicializalas(map,init,goal) -> topic/robot
+
 DeadEnd pozíció(x,y) -> topic/robot
