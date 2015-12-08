@@ -49,7 +49,6 @@ void Robot_v1::init()
 	ifaceInternalSCI.goal_y = 2;
 	ifaceInternalSCI.pos_x = 0;
 	ifaceInternalSCI.pos_y = 0;
-	ifaceInternalSCI.deadEndPath = "";
 	ifaceInternalSCI.nextStep = 0;
 	ifaceInternalSCI.index = 0;
 
@@ -699,14 +698,6 @@ void Robot_v1::InternalSCI::set_pos_y(sc_integer value) {
 	pos_y = value;
 }
 
-sc_string Robot_v1::InternalSCI::get_deadEndPath() {
-	return deadEndPath;
-}
-
-void Robot_v1::InternalSCI::set_deadEndPath(sc_string value) {
-	deadEndPath = value;
-}
-
 sc_integer Robot_v1::InternalSCI::get_nextStep() {
 	return nextStep;
 }
@@ -1228,7 +1219,6 @@ void Robot_v1::react_main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Mes
 		if (ifaceComm.message == 4) { 
 			/* 'default' enter sequence for state Help_received */
 			/* Entry action for state 'Help_received'. */
-			ifaceInternalSCI.deadEndPath = ifaceComm_OCB->getPath();
 			ifaceInternalSCI.PathReceived_raised = true;
 			stateConfVector[0] = main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received;
 			stateConfVectorPosition = 0;
@@ -1296,7 +1286,7 @@ void Robot_v1::react_main_region_Path_Walking_Path_Walking_sd_Sensor_update() {
 	stateConfVectorPosition = 0;
 	/* 'default' enter sequence for state Next_Step */
 	/* Entry action for state 'Next_Step'. */
-	ifaceInternalSCI.nextStep = ifaceInternalSCI_OCB->getStep(ifaceInternalSCI.deadEndPath, ifaceInternalSCI.index);
+	ifaceInternalSCI.nextStep = ifaceInternalSCI_OCB->getStep(ifaceInternalSCI.index);
 	stateConfVector[0] = main_region_Path_Walking_Path_Walking_sd_Next_Step;
 	stateConfVectorPosition = 0;
 }

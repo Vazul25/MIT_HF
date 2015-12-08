@@ -103,8 +103,6 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 				virtual sc_integer getGoalX() = 0;
 				
 				virtual sc_integer getGoalY() = 0;
-				
-				virtual sc_string getPath() = 0;
 		};
 		
 		/*! Set the working instance of the operation callback interface 'SCI_Comm_OCB'. */
@@ -205,7 +203,7 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 			public:
 				virtual ~InternalSCI_OCB() = 0;
 				
-				virtual sc_integer getStep(sc_string path, sc_integer i) = 0;
+				virtual sc_integer getStep(sc_integer i) = 0;
 		};
 		
 		/*! Set the working instance of the operation callback interface 'InternalSCI_OCB'. */
@@ -288,12 +286,6 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 				/*! Checks if the out event 'deadEnd' that is defined in the internal scope has been raised. */ 
 				sc_boolean isRaised_deadEnd();
 				
-				/*! Gets the value of the variable 'deadEndPath' that is defined in the internal scope. */ 
-				sc_string get_deadEndPath();
-				
-				/*! Sets the value of the variable 'deadEndPath' that is defined in the internal scope. */ 
-				void set_deadEndPath(sc_string value);
-				
 				/*! Gets the value of the variable 'nextStep' that is defined in the internal scope. */ 
 				sc_integer get_nextStep();
 				
@@ -319,7 +311,6 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 				sc_integer pos_y;
 				sc_boolean PathReceived_raised;
 				sc_boolean deadEnd_raised;
-				sc_string deadEndPath;
 				sc_integer nextStep;
 				sc_integer index;
 		};

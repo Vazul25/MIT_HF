@@ -11,6 +11,17 @@ topic/cloud/path -> fileba irodik a bejarando utvonal
 
 topic/cloud/signal -> Comm.message valtozoba irodik (1-4)
 
-Inicializalas(map,init,goal) -> topic/robot
-
 DeadEnd pozíció(x,y) -> topic/robot
+
+Fájlok a roboton:
+/home/pi/sendToCloud.txt - Egy szám érték amit küldünk a Cloud felé
+
+/home/pi/Map.txt 
+(n,m paraméterek
+n*m-es mátrix
+Goal_pos
+Init_pos
+)
+
+/home/pi/msgFromCloud.txt - Egy szám érték, amit a Cloudtól kapunk
+/home/pi/Path.txt - Egy sorozat (1-4), hogy milyen irányba kell mennie a robotnak
