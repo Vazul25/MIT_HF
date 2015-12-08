@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:sgraph="http://www.yakindu.org/sct/sgraph/2.0.0">
-  <sgraph:Statechart xmi:id="_xKdlIF_MEeW4UopF13yAUw" specification="interface Comm:&#xD;&#xA;  in event message_received&#xD;&#xA;  out event message_sent&#xD;&#xA;  var message : integer&#xD;&#xA;  var comm : boolean&#xD;&#xA;  operation sendMessage(s1: integer,x: integer, y:integer): integer&#xD;&#xA;  operation waitMessage(): integer&#xD;&#xA;  operation getPath(): string&#xD;&#xA;&#xD;&#xA;interface Control:&#xD;&#xA;  in event goUp&#xD;&#xA;  in event goDown&#xD;&#xA;  in event goLeft&#xD;&#xA;  in event goRight  &#xD;&#xA;&#xD;&#xA;interface Sensor:&#xD;&#xA;  var up : boolean&#xD;&#xA;  var down : boolean&#xD;&#xA;  var left : boolean&#xD;&#xA;  var right : boolean&#xD;&#xA;  operation updateUp(x: integer, y: integer): boolean&#xD;&#xA;  operation updateDown(x: integer, y: integer): boolean&#xD;&#xA;  operation updateLeft(x: integer, y: integer): boolean&#xD;&#xA;  operation updateRight(x: integer, y: integer): boolean&#xD;&#xA;  &#xD;&#xA;internal:&#xD;&#xA;  var readonly init_x : integer = 0&#xD;&#xA;  var readonly init_y : integer = 0&#xD;&#xA;  var map_x : integer = 5&#xD;&#xA;  var map_y : integer = 5&#xD;&#xA;  var goal_x: integer = 2&#xD;&#xA;  var goal_y: integer = 2&#xD;&#xA;  var pos_x : integer&#xD;&#xA;  var pos_y : integer&#xD;&#xA;  event PathReceived&#xD;&#xA;  event deadEnd&#xD;&#xA;  var deadEndPath: string&#xD;&#xA;  var nextStep: integer&#xD;&#xA;  var index: integer&#xD;&#xA;  operation getStep(path: string, i: integer): integer" name="robot_v1">
+  <sgraph:Statechart xmi:id="_xKdlIF_MEeW4UopF13yAUw" specification="interface Comm:&#xD;&#xA;  in event message_received&#xD;&#xA;  out event message_sent&#xD;&#xA;  var message : integer&#xD;&#xA;  var comm : boolean&#xD;&#xA;  operation sendMessage(s1: integer,x: integer, y:integer): integer&#xD;&#xA;  operation waitMessage(): integer&#xD;&#xA;  operation getInitX(): integer&#xD;&#xA;  operation getInitY(): integer&#xD;&#xA;  operation getMapX(): integer&#xD;&#xA;  operation getMapY(): integer&#xD;&#xA;  operation getGoalX(): integer&#xD;&#xA;  operation getGoalY(): integer  &#xD;&#xA;  operation getPath(): string&#xD;&#xA;&#xD;&#xA;interface Control:&#xD;&#xA;  in event goUp&#xD;&#xA;  in event goDown&#xD;&#xA;  in event goLeft&#xD;&#xA;  in event goRight  &#xD;&#xA;&#xD;&#xA;interface Sensor:&#xD;&#xA;  var up : boolean&#xD;&#xA;  var down : boolean&#xD;&#xA;  var left : boolean&#xD;&#xA;  var right : boolean&#xD;&#xA;  operation updateUp(x: integer, y: integer): boolean&#xD;&#xA;  operation updateDown(x: integer, y: integer): boolean&#xD;&#xA;  operation updateLeft(x: integer, y: integer): boolean&#xD;&#xA;  operation updateRight(x: integer, y: integer): boolean&#xD;&#xA;  &#xD;&#xA;internal:&#xD;&#xA;  var readonly init_x : integer = 0&#xD;&#xA;  var readonly init_y : integer = 0&#xD;&#xA;  var map_x : integer = 5&#xD;&#xA;  var map_y : integer = 5&#xD;&#xA;  var goal_x: integer = 2&#xD;&#xA;  var goal_y: integer = 2&#xD;&#xA;  var pos_x : integer&#xD;&#xA;  var pos_y : integer&#xD;&#xA;  event PathReceived&#xD;&#xA;  event deadEnd&#xD;&#xA;  var deadEndPath: string&#xD;&#xA;  var nextStep: integer&#xD;&#xA;  var index: integer&#xD;&#xA;  operation getStep(path: string, i: integer): integer" name="robot_v1">
     <regions xmi:id="_xNlxoF_MEeW4UopF13yAUw" name="main region">
       <vertices xsi:type="sgraph:Entry" xmi:id="_xQvzUF_MEeW4UopF13yAUw">
         <outgoingTransitions xmi:id="_xRZTkF_MEeW4UopF13yAUw" target="_xQzdsF_MEeW4UopF13yAUw"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_xQzdsF_MEeW4UopF13yAUw" name="Start" incomingTransitions="_xRZTkF_MEeW4UopF13yAUw">
+      <vertices xsi:type="sgraph:State" xmi:id="_xQzdsF_MEeW4UopF13yAUw" specification="" name="Start" incomingTransitions="_xRZTkF_MEeW4UopF13yAUw">
         <outgoingTransitions xmi:id="_QqWWoF_REeW4UopF13yAUw" specification="after 1 s" target="_Jugl4F_REeW4UopF13yAUw"/>
       </vertices>
       <vertices xsi:type="sgraph:State" xmi:id="_Jugl4F_REeW4UopF13yAUw" specification="" name="Comm_test" incomingTransitions="_QqWWoF_REeW4UopF13yAUw">
@@ -30,7 +30,7 @@
       <vertices xsi:type="sgraph:State" xmi:id="_WuBJQF_REeW4UopF13yAUw" specification="" name="Robot_Logic" incomingTransitions="_aM5q8F_REeW4UopF13yAUw _GfGT8JKwEeWJMpqvxORhpA">
         <outgoingTransitions xmi:id="_4s1QUJEiEeWbqKMRP23E0w" specification="" target="_glkdMF_REeW4UopF13yAUw"/>
         <regions xmi:id="_-S6Z0GRFEeWvdfra5dURUQ" name="Robot_Logic_sd">
-          <vertices xsi:type="sgraph:State" xmi:id="_NYjjQGRGEeWvdfra5dURUQ" specification="entry / &#xD;&#xA;pos_x = init_x;&#xD;&#xA;pos_y = init_y" name="Init" incomingTransitions="__brY0JEgEeWbqKMRP23E0w">
+          <vertices xsi:type="sgraph:State" xmi:id="_NYjjQGRGEeWvdfra5dURUQ" specification="entry / &#xD;&#xA;pos_x = Comm.getInitX();&#xD;&#xA;pos_y = Comm.getInitY();&#xD;&#xA;map_x = Comm.getMapX();&#xD;&#xA;map_y = Comm.getMapY();&#xD;&#xA;goal_x = Comm.getGoalX();&#xD;&#xA;goal_y = Comm.getGoalY()" name="Init" incomingTransitions="__brY0JEgEeWbqKMRP23E0w">
             <outgoingTransitions xmi:id="_X1PgYJKwEeWJMpqvxORhpA" specification="always" target="_V2dfgJKwEeWJMpqvxORhpA"/>
           </vertices>
           <vertices xsi:type="sgraph:State" xmi:id="_hbphUGRKEeWvdfra5dURUQ" specification="entry/&#xD;&#xA;Sensor.up = Sensor.updateUp(pos_x,pos_y);&#xD;&#xA;Sensor.down = Sensor.updateDown(pos_x,pos_y);&#xD;&#xA;Sensor.left = Sensor.updateLeft(pos_x,pos_y);&#xD;&#xA;Sensor.right = Sensor.updateRight(pos_x,pos_y)" name="Sensor_update" incomingTransitions="_aKPo4JKwEeWJMpqvxORhpA">
@@ -675,7 +675,7 @@
           <styles xsi:type="notation:ShapeStyle" xmi:id="_NYjjRGRGEeWvdfra5dURUQ" fontName="Verdana" fillColor="15981773" lineColor="12632256"/>
           <styles xsi:type="notation:FontStyle" xmi:id="_NYjjRWRGEeWvdfra5dURUQ"/>
           <styles xsi:type="notation:BooleanValueStyle" xmi:id="_NYtURGRGEeWvdfra5dURUQ" name="isHorizontal" booleanValue="true"/>
-          <layoutConstraint xsi:type="notation:Bounds" xmi:id="_NYjjRmRGEeWvdfra5dURUQ" x="-31" y="11" width="171" height="92"/>
+          <layoutConstraint xsi:type="notation:Bounds" xmi:id="_NYjjRmRGEeWvdfra5dURUQ" x="-125" y="-1" width="204" height="133"/>
         </children>
         <children xmi:id="_hbzSUGRKEeWvdfra5dURUQ" type="State" element="_hbphUGRKEeWvdfra5dURUQ">
           <children xsi:type="notation:DecorationNode" xmi:id="_hbzSVGRKEeWvdfra5dURUQ" type="StateName">
@@ -738,7 +738,7 @@
             <layoutConstraint xsi:type="notation:Bounds" xmi:id="_-220hZEgEeWbqKMRP23E0w"/>
           </children>
           <styles xsi:type="notation:ShapeStyle" xmi:id="_-220gZEgEeWbqKMRP23E0w" fontName="Verdana" lineColor="4210752"/>
-          <layoutConstraint xsi:type="notation:Bounds" xmi:id="_-220gpEgEeWbqKMRP23E0w" x="-76" y="47"/>
+          <layoutConstraint xsi:type="notation:Bounds" xmi:id="_-220gpEgEeWbqKMRP23E0w" x="-82" y="182"/>
         </children>
         <children xmi:id="_V2nQgJKwEeWJMpqvxORhpA" type="State" element="_V2dfgJKwEeWJMpqvxORhpA">
           <children xsi:type="notation:DecorationNode" xmi:id="_V2nQhJKwEeWJMpqvxORhpA" type="StateName">

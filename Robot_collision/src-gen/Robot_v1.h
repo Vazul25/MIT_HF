@@ -92,6 +92,18 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 				
 				virtual sc_integer waitMessage() = 0;
 				
+				virtual sc_integer getInitX() = 0;
+				
+				virtual sc_integer getInitY() = 0;
+				
+				virtual sc_integer getMapX() = 0;
+				
+				virtual sc_integer getMapY() = 0;
+				
+				virtual sc_integer getGoalX() = 0;
+				
+				virtual sc_integer getGoalY() = 0;
+				
 				virtual sc_string getPath() = 0;
 		};
 		

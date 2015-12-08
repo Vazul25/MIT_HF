@@ -745,8 +745,12 @@ void Robot_v1::shenseq_SequenceImpl() {
 		case main_region_Robot_Logic_Robot_Logic_sd_Init : {
 			/* 'default' enter sequence for state Init */
 			/* Entry action for state 'Init'. */
-			ifaceInternalSCI.pos_x = ifaceInternalSCI.init_x;
-			ifaceInternalSCI.pos_y = ifaceInternalSCI.init_y;
+			ifaceInternalSCI.pos_x = ifaceComm_OCB->getInitX();
+			ifaceInternalSCI.pos_y = ifaceComm_OCB->getInitY();
+			ifaceInternalSCI.map_x = ifaceComm_OCB->getMapX();
+			ifaceInternalSCI.map_y = ifaceComm_OCB->getMapY();
+			ifaceInternalSCI.goal_x = ifaceComm_OCB->getGoalX();
+			ifaceInternalSCI.goal_y = ifaceComm_OCB->getGoalY();
 			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Init;
 			stateConfVectorPosition = 0;
 			historyVector[0] = stateConfVector[0];
@@ -864,8 +868,12 @@ void Robot_v1::react_main_region_Comm_test_Comm_test_sd_Start() {
 		} else {
 			/* 'default' enter sequence for state Init */
 			/* Entry action for state 'Init'. */
-			ifaceInternalSCI.pos_x = ifaceInternalSCI.init_x;
-			ifaceInternalSCI.pos_y = ifaceInternalSCI.init_y;
+			ifaceInternalSCI.pos_x = ifaceComm_OCB->getInitX();
+			ifaceInternalSCI.pos_y = ifaceComm_OCB->getInitY();
+			ifaceInternalSCI.map_x = ifaceComm_OCB->getMapX();
+			ifaceInternalSCI.map_y = ifaceComm_OCB->getMapY();
+			ifaceInternalSCI.goal_x = ifaceComm_OCB->getGoalX();
+			ifaceInternalSCI.goal_y = ifaceComm_OCB->getGoalY();
 			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Init;
 			stateConfVectorPosition = 0;
 			historyVector[0] = stateConfVector[0];
@@ -923,8 +931,12 @@ void Robot_v1::react_main_region_Comm_test_Comm_test_sd_WaitForCloud() {
 		} else {
 			/* 'default' enter sequence for state Init */
 			/* Entry action for state 'Init'. */
-			ifaceInternalSCI.pos_x = ifaceInternalSCI.init_x;
-			ifaceInternalSCI.pos_y = ifaceInternalSCI.init_y;
+			ifaceInternalSCI.pos_x = ifaceComm_OCB->getInitX();
+			ifaceInternalSCI.pos_y = ifaceComm_OCB->getInitY();
+			ifaceInternalSCI.map_x = ifaceComm_OCB->getMapX();
+			ifaceInternalSCI.map_y = ifaceComm_OCB->getMapY();
+			ifaceInternalSCI.goal_x = ifaceComm_OCB->getGoalX();
+			ifaceInternalSCI.goal_y = ifaceComm_OCB->getGoalY();
 			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Init;
 			stateConfVectorPosition = 0;
 			historyVector[0] = stateConfVector[0];
@@ -994,8 +1006,12 @@ void Robot_v1::react_main_region_Comm_test_Comm_test_sd_Link_Established() {
 		} else {
 			/* 'default' enter sequence for state Init */
 			/* Entry action for state 'Init'. */
-			ifaceInternalSCI.pos_x = ifaceInternalSCI.init_x;
-			ifaceInternalSCI.pos_y = ifaceInternalSCI.init_y;
+			ifaceInternalSCI.pos_x = ifaceComm_OCB->getInitX();
+			ifaceInternalSCI.pos_y = ifaceComm_OCB->getInitY();
+			ifaceInternalSCI.map_x = ifaceComm_OCB->getMapX();
+			ifaceInternalSCI.map_y = ifaceComm_OCB->getMapY();
+			ifaceInternalSCI.goal_x = ifaceComm_OCB->getGoalX();
+			ifaceInternalSCI.goal_y = ifaceComm_OCB->getGoalY();
 			stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Init;
 			stateConfVectorPosition = 0;
 			historyVector[0] = stateConfVector[0];
@@ -1411,8 +1427,12 @@ void Robot_v1::react_main_region_Path_Walking_Path_Walking_sd_Next_Step() {
 			} else {
 				/* 'default' enter sequence for state Init */
 				/* Entry action for state 'Init'. */
-				ifaceInternalSCI.pos_x = ifaceInternalSCI.init_x;
-				ifaceInternalSCI.pos_y = ifaceInternalSCI.init_y;
+				ifaceInternalSCI.pos_x = ifaceComm_OCB->getInitX();
+				ifaceInternalSCI.pos_y = ifaceComm_OCB->getInitY();
+				ifaceInternalSCI.map_x = ifaceComm_OCB->getMapX();
+				ifaceInternalSCI.map_y = ifaceComm_OCB->getMapY();
+				ifaceInternalSCI.goal_x = ifaceComm_OCB->getGoalX();
+				ifaceInternalSCI.goal_y = ifaceComm_OCB->getGoalY();
 				stateConfVector[0] = main_region_Robot_Logic_Robot_Logic_sd_Init;
 				stateConfVectorPosition = 0;
 				historyVector[0] = stateConfVector[0];
