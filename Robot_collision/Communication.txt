@@ -19,8 +19,8 @@ Fájlok a roboton:
 /home/pi/Map.txt 
 (n,m paraméterek
 n*m-es mátrix
-Goal_pos
 Init_pos
+Goal_pos
 )
 
 /home/pi/msgFromCloud.txt - Egy szám érték, amit a Cloudtól kapunk
