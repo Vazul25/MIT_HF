@@ -167,6 +167,27 @@ public:
 
 class RobotTimerInterface : public TimerInterface {
 	public:	
+		void* timerLoop(void* object){
+			RobotTimerInterface* interF = (RobotTimerInterface*) object;
+			while(interF->runnable && !(interF->terminate)){
+				for(std::list<EventTimer>::iterator t = interF->timerList.begin();t!=interF->timerList.end();++t){
+					if(!(interF->runnable)) break;
+					EventTimer tempEvent = (*t);
+					SMEvent tempSMEvent = tempEvent.first;
+					TimedStatemachineInterface * statemachine = tempSMEvent.first;
+					sc_eventid eventId = tempSMEvent.second;
+
+					TimePair tempTimer = tempEvent.second;
+					clock_t start = tempTimer.first;
+					sc_integer interval = tempTimer.second;
+
+					clock_t now = clock();
+					if(now > (start + interval)) statemachine->raiseTimeEvent(eventId);
+				}
+			}
+			pthread_exit(NULL);
+		}
+		
 		pthread_t thread;
 		
 		RobotTimerInterface(){
@@ -217,27 +238,6 @@ class RobotTimerInterface : public TimerInterface {
 			pthread_join(thread,NULL);
 		}
 		
-		void* timerLoop(RobotTimerInterface* interF){
-			while(interF->runnable && !(interF->terminate)){
-				for(std::list<EventTimer>::iterator t = interF->timerList.begin();t!=interF->timerList.end();++t){
-					if(!(interF->runnable)) break;
-					EventTimer tempEvent = (*t);
-					SMEvent tempSMEvent = tempEvent.first;
-					TimedStatemachineInterface * statemachine = tempSMEvent.first;
-					sc_eventid eventId = tempSMEvent.second;
-
-					TimePair tempTimer = tempEvent.second;
-					clock_t start = tempTimer.first;
-					sc_integer interval = tempTimer.second;
-
-					clock_t now = clock();
-					if(now > (start + interval)) statemachine->raiseTimeEvent(eventId);
-				}
-			}
-			pthread_exit(NULL);
-		}
-		
-
 		typedef pair<clock_t, sc_integer> TimePair;
 		typedef pair<TimedStatemachineInterface*,sc_eventid> SMEvent;
 		typedef pair<SMEvent, TimePair> EventTimer;
