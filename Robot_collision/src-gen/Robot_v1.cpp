@@ -293,6 +293,104 @@ void Robot_v1::runCycle() {
 	for (stateConfVectorPosition = 0;
 		stateConfVectorPosition < maxOrthogonalStates;
 		stateConfVectorPosition++) {
+		
+		std::cout << "state: " << stateConfVector[stateConfVectorPosition] << std::endl;
+
+		switch (stateConfVector[stateConfVectorPosition]){
+		case main_region_Start:
+		std::cout << "main_region_Start"<< std::endl;
+			break;
+		case main_region_Comm_test:
+		std::cout <<"main_region_Comm_test" << std::endl;
+			break;
+		case main_region_Comm_test_Comm_test_sd_Start:
+		std::cout << "main_region_Comm_test_Comm_test_sd_Start"<< std::endl;
+			break;
+		case main_region_Comm_test_Comm_test_sd_WaitForCloud:
+		std::cout << "main_region_Comm_test_Comm_test_sd_WaitForCloud"<< std::endl;
+			break;
+		case main_region_Comm_test_Comm_test_sd_Link_Established:
+		std::cout << "main_region_Comm_test_Comm_test_sd_Link_Established"<< std::endl;
+			break;
+		case main_region_Robot_Logic:
+		std::cout << "main_region_Robot_Logic"<< std::endl;
+			break;
+		case main_region_Robot_Logic_Robot_Logic_sd_Init:
+		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Init"<< std::endl;
+			break;
+		case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update:
+		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Sensor_update"<< std::endl;
+			break;
+		case main_region_Robot_Logic_Robot_Logic_sd_Up:
+		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Up"<< std::endl;
+			break;
+		case main_region_Robot_Logic_Robot_Logic_sd_Right:
+		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Right"<< std::endl;
+			break;
+		case main_region_Robot_Logic_Robot_Logic_sd_Check_goals:
+		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Check_goals"<< std::endl;
+			break;
+		case main_region_Robot_Logic_Robot_Logic_sd_DeadEnd:
+		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_DeadEnd"<< std::endl;
+			break;
+		case main_region_Robot_Logic_Robot_Logic_sd__final_:
+		std::cout <<"main_region_Robot_Logic_Robot_Logic_sd__final_" << std::endl;
+			break;
+		case main_region_Help_from_Cloud:
+		std::cout <<"main_region_Help_from_Cloud" << std::endl;
+			break;
+		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Send:
+		std::cout <<"main_region_Help_from_Cloud_Help_from_Cloud_sd_Send" << std::endl;
+			break;
+		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message:
+		std::cout <<"main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message" << std::endl;
+			break;
+		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received:
+		std::cout <<"main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received" << std::endl;
+			break;
+		case main_region_Path_Walking:
+		std::cout <<"main_region_Path_Walking" << std::endl;
+			break;
+		case main_region_Path_Walking_Path_Walking_sd_Sensor_update:
+		std::cout << "main_region_Path_Walking_Path_Walking_sd_Sensor_update"<< std::endl;
+			break;
+		case main_region_Path_Walking_Path_Walking_sd_Next_Step:
+		std::cout <<"main_region_Path_Walking_Path_Walking_sd_Next_Step" << std::endl;
+			break;
+		case main_region_Path_Walking_Path_Walking_sd_Init:
+		std::cout <<"ain_region_Path_Walking_Path_Walking_sd_Init" << std::endl;
+			break;
+		case main_region_Path_Walking_Path_Walking_sd_Up:
+		std::cout << "main_region_Path_Walking_Path_Walking_sd_Up"<< std::endl;
+			break;
+		case main_region_Path_Walking_Path_Walking_sd_Right:
+		std::cout <<"ain_region_Path_Walking_Path_Walking_sd_Right" << std::endl;
+			break;
+		case main_region_Path_Walking_Path_Walking_sd_Down:
+		std::cout <<"main_region_Path_Walking_Path_Walking_sd_Down" << std::endl;
+			break;
+		case main_region_Path_Walking_Path_Walking_sd_Left:
+		std::cout <<"main_region_Path_Walking_Path_Walking_sd_Left" << std::endl;
+			break;
+		case Robot_Logic_Control_Wait_for_Command:
+		std::cout << "Robot_Logic_Control_Wait_for_Command"<< std::endl;
+			break;
+		case Robot_Logic_Control_Go_Up:
+		std::cout << "Robot_Logic_Control_Go_Up"<< std::endl;
+			break;
+		case Robot_Logic_Control_Go_Down:
+		std::cout <<"Robot_Logic_Control_Go_Down" << std::endl;
+			break;
+		case Robot_Logic_Control_Go_Left:
+		std::cout << "Robot_Logic_Control_Go_Left"<< std::endl;
+			break;
+		case Robot_Logic_Control_Go_Right:
+		std::cout <<"Robot_Logic_Control_Go_Right" << std::endl;
+			break;
+		case Robot_v1_last_state:
+		std::cout <<"Robot_v1_last_state" << std::endl;
+			break;
+		}
 			
 		switch (stateConfVector[stateConfVectorPosition]) {
 		case main_region_Start : {
@@ -452,101 +550,6 @@ void Robot_v1::raiseTimeEvent(sc_eventid evid) {
 }
 
 sc_boolean Robot_v1::isActive(Robot_v1States state) {
-	switch (state){
-		case main_region_Start:
-		std::cout << "main_region_Start"<< std::endl;
-			break;
-		case main_region_Comm_test:
-		std::cout <<"main_region_Comm_test" << std::endl;
-			break;
-		case main_region_Comm_test_Comm_test_sd_Start:
-		std::cout << "main_region_Comm_test_Comm_test_sd_Start"<< std::endl;
-			break;
-		case main_region_Comm_test_Comm_test_sd_WaitForCloud:
-		std::cout << "main_region_Comm_test_Comm_test_sd_WaitForCloud"<< std::endl;
-			break;
-		case main_region_Comm_test_Comm_test_sd_Link_Established:
-		std::cout << "main_region_Comm_test_Comm_test_sd_Link_Established"<< std::endl;
-			break;
-		case main_region_Robot_Logic:
-		std::cout << "main_region_Robot_Logic"<< std::endl;
-			break;
-		case main_region_Robot_Logic_Robot_Logic_sd_Init:
-		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Init"<< std::endl;
-			break;
-		case main_region_Robot_Logic_Robot_Logic_sd_Sensor_update:
-		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Sensor_update"<< std::endl;
-			break;
-		case main_region_Robot_Logic_Robot_Logic_sd_Up:
-		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Up"<< std::endl;
-			break;
-		case main_region_Robot_Logic_Robot_Logic_sd_Right:
-		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Right"<< std::endl;
-			break;
-		case main_region_Robot_Logic_Robot_Logic_sd_Check_goals:
-		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_Check_goals"<< std::endl;
-			break;
-		case main_region_Robot_Logic_Robot_Logic_sd_DeadEnd:
-		std::cout << "main_region_Robot_Logic_Robot_Logic_sd_DeadEnd"<< std::endl;
-			break;
-		case main_region_Robot_Logic_Robot_Logic_sd__final_:
-		std::cout <<"main_region_Robot_Logic_Robot_Logic_sd__final_" << std::endl;
-			break;
-		case main_region_Help_from_Cloud:
-		std::cout <<"main_region_Help_from_Cloud" << std::endl;
-			break;
-		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Send:
-		std::cout <<"main_region_Help_from_Cloud_Help_from_Cloud_sd_Send" << std::endl;
-			break;
-		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message:
-		std::cout <<"main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message" << std::endl;
-			break;
-		case main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received:
-		std::cout <<"main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received" << std::endl;
-			break;
-		case main_region_Path_Walking:
-		std::cout <<"main_region_Path_Walking" << std::endl;
-			break;
-		case main_region_Path_Walking_Path_Walking_sd_Sensor_update:
-		std::cout << "main_region_Path_Walking_Path_Walking_sd_Sensor_update"<< std::endl;
-			break;
-		case main_region_Path_Walking_Path_Walking_sd_Next_Step:
-		std::cout <<"main_region_Path_Walking_Path_Walking_sd_Next_Step" << std::endl;
-			break;
-		case main_region_Path_Walking_Path_Walking_sd_Init:
-		std::cout <<"ain_region_Path_Walking_Path_Walking_sd_Init" << std::endl;
-			break;
-		case main_region_Path_Walking_Path_Walking_sd_Up:
-		std::cout << "main_region_Path_Walking_Path_Walking_sd_Up"<< std::endl;
-			break;
-		case main_region_Path_Walking_Path_Walking_sd_Right:
-		std::cout <<"ain_region_Path_Walking_Path_Walking_sd_Right" << std::endl;
-			break;
-		case main_region_Path_Walking_Path_Walking_sd_Down:
-		std::cout <<"main_region_Path_Walking_Path_Walking_sd_Down" << std::endl;
-			break;
-		case main_region_Path_Walking_Path_Walking_sd_Left:
-		std::cout <<"main_region_Path_Walking_Path_Walking_sd_Left" << std::endl;
-			break;
-		case Robot_Logic_Control_Wait_for_Command:
-		std::cout << "Robot_Logic_Control_Wait_for_Command"<< std::endl;
-			break;
-		case Robot_Logic_Control_Go_Up:
-		std::cout << "Robot_Logic_Control_Go_Up"<< std::endl;
-			break;
-		case Robot_Logic_Control_Go_Down:
-		std::cout <<"Robot_Logic_Control_Go_Down" << std::endl;
-			break;
-		case Robot_Logic_Control_Go_Left:
-		std::cout << "Robot_Logic_Control_Go_Left"<< std::endl;
-			break;
-		case Robot_Logic_Control_Go_Right:
-		std::cout <<"Robot_Logic_Control_Go_Right" << std::endl;
-			break;
-		case Robot_v1_last_state:
-		std::cout <<"Robot_v1_last_state" << std::endl;
-			break;
-	}
 	switch (state) {
 		case main_region_Start : 
 			return (sc_boolean) (stateConfVector[0] == main_region_Start

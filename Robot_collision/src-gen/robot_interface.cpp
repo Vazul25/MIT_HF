@@ -182,23 +182,31 @@ class RobotTimerInterface : public TimerInterface {
 
 		static void timerLoop(RobotTimerInterface* interF ){
 			try{
+				int db = 0;
 				std::cout << "TimerLOOP Init: " << std::endl;
-				/*while(runnable && !(terminateVar)){
+				while(runnable && !(terminateVar)){
+					db++;
 					for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
 						if(!(runnable)) break;
 						EventTimer tempEvent = (*t);
 						SMEvent tempSMEvent = tempEvent.first;
 						TimedStatemachineInterface * statemachine = tempSMEvent.first;
 						sc_eventid eventId = tempSMEvent.second;
-	
+						
+						if((db % 10000) == 0)std::cout << "Accumulate: " << eventId << std::endl;
+						
 						TimePair tempTimer = tempEvent.second;
 						clock_t start = tempTimer.first;
 						sc_integer interval = tempTimer.second;
 	
 						clock_t now = clock();
-						if(now > (start + interval)) statemachine->raiseTimeEvent(eventId);
+						if(now > (start + interval)) {
+							if((db % 10000) ==0) std::cout << "Raised" << std::endl;
+							statemachine->raiseTimeEvent(eventId);
+						}
 					}
-				}*/
+					//if(db % 10000) std::cout << "DB:" << db << std::endl;
+				}
 			}
 			catch(std::exception e){
 				std::cout <<"My Exception Handler: " << e.what() << std::endl;
@@ -214,6 +222,7 @@ class RobotTimerInterface : public TimerInterface {
 		 * Starts the timing for a time event.
 		 */ 
 		void setTimer(TimedStatemachineInterface* statemachine, sc_eventid event, sc_integer interval, sc_boolean isPeriodic) {
+			std::cout << "SetTimerBy" << event << std::endl;
 			clock_t now = clock();
 			TimePair newTimer(now, interval);
 			SMEvent newSMEvent(statemachine, event);
@@ -225,6 +234,7 @@ class RobotTimerInterface : public TimerInterface {
 		 * Unsets the given time event.
 		 */
 		void unsetTimer(TimedStatemachineInterface* statemachine, sc_eventid event){
+			std::cout << "UnsetTimerBy" << event << std::endl;
 			if(event != NULL){
 				for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
 					if(t->first.second == event) {					
@@ -241,7 +251,7 @@ class RobotTimerInterface : public TimerInterface {
 		 */
 		void cancel(){
 			terminateVar = true;
-			t1.join();
+			//t1.join();
 		}
 };
 
@@ -272,7 +282,7 @@ int main()
 	catch(std::exception e){
 		std::cout << "My Exception Handler: "<< e.what() << std::endl;
 	}
-
+	timer.t1.join();
   	return 1;
 }
 
