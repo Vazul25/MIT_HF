@@ -19,7 +19,7 @@ enum Comm_Packets{
 
 char* mtx;
 int n, m;
-String path;
+string path;
 
 class RobotComm : public Robot_v1::SCI_Comm_OCB{
 public:	
@@ -49,10 +49,10 @@ public:
 			getline(myfile,temp);
 			mtx = new char[n*m];
 			int j=0;
-			for(int i=0;temp[i]!='\n';i++){
+			for(unsigned int i=0;temp[i]!='\n';i++){
 				if(temp[i] == '\n') temp[i]='\0';
 			}
-			for(int i=0;i<temp.size();i++){
+			for(unsigned int i=0;i<temp.size();i++){
 				if(temp[i] != ',') mtx[j++] = temp[i];
 			}
 
@@ -74,17 +74,16 @@ public:
 			int db=0;
 			string temp;
 			getline(myfile,temp);
-			int db=0;
-			string temp = temp + "0";
-			for(int i = 0;i<temp.size();i++) if(temp[i] >= '0' && temp[i] <= '4') db++;
-			char* out = char[db];
+			temp = temp + "0";
+			for(unsigned int i = 0;i<temp.size();i++) if(temp[i] >= '0' && temp[i] <= '4') db++;
+			char* out = new char[db];
 			int j=0;
-			for(int i=1;i<temp.size();i++){
+			for(unsigned int i=1;i<temp.size();i++){
 				if(temp[i] !=',') out[j++] = temp[i];
 			}
 			myfile.close();
-			path = String(out);
-
+			path = string(out);
+			delete out;
 		}
 	}
 	
@@ -159,7 +158,9 @@ class RobotUtility : public Robot_v1::InternalSCI_OCB {
 public:
 	
 	sc_integer getStep(sc_integer i) {
-		if(i<path.size()) return (int)(path[i]-'0');
+		sc_integer len = path.size();
+		if(i<len) return (int)(path[i]-'0');
+		else return 0;
 	}
 };
 
@@ -167,7 +168,10 @@ class RobotTimerInterface : public TimerInterface {
 	public:	
 
 		RobotTimerInterface(){
-			t1 = boost::thread(timerLoop);
+			runnable = true;
+			terminate = false;
+			TimerLoop th;
+			t1 = boost::thread(th,this);
 		}
 
 		/*
@@ -176,7 +180,8 @@ class RobotTimerInterface : public TimerInterface {
 		void setTimer(TimedStatemachineInterface* statemachine, sc_eventid event, sc_integer interval, sc_boolean isPeriodic) {
 			clock_t now = clock();
 			TimePair newTimer(now, interval);
-			EventTimer newEventTimer(event,newTimer);
+			SMEvent newSMEvent(statemachine, event);
+			EventTimer newEventTimer(newSMEvent,newTimer);
 			timerList.insert(timerList.end(),newEventTimer);
 		}
 		
@@ -194,26 +199,8 @@ class RobotTimerInterface : public TimerInterface {
 				}
 				*(sc_boolean*)event = false;
 				runnable=true;
-				t1 = boost::thread(timerLoop);
-			}
-		}
-
-		void timerLoop(){
-			while(runnable && !terminate){
-				for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
-					if(!runnable) break;
-					EventTimer tempEvent = (*t);
-					SMEvent tempSMEvent = tempEvent.first;
-					TimedStatemachineInterface * statemachine = tempSMEvent.first;
-					sc_eventid eventId = tempSMEvent.second;
-
-					TimePair tempTimer = tempEvent.second;
-					clock_t start = tempTimer.first;
-					sc_integer interval = tempTimer.second;
-
-					clock_t now = clock();
-					if(now > (start + interval)) statemachine.raiseTimeEvent(eventId);
-				}
+				TimerLoop th;
+				t1 = boost::thread(th,this);
 			}
 		}
 	
@@ -226,16 +213,41 @@ class RobotTimerInterface : public TimerInterface {
 			t1.join();
 		}
 
-	private:
 		typedef pair<clock_t, sc_integer> TimePair;
 		typedef pair<TimedStatemachineInterface*,sc_eventid> SMEvent;
 		typedef pair<SMEvent, TimePair> EventTimer;
-		std::list<EventTimer> timerList;
 
+		std::list<EventTimer> timerList;
+		bool runnable;
+		bool terminate; 
+
+	private:
+		
 		boost::thread t1;
-		bool runnable = true;
-		bool terminate = false; 
+
+		struct TimerLoop{
+			void operator()(RobotTimerInterface* interF){
+				while(interF->runnable && !(interF->terminate)){
+					for(std::list<EventTimer>::iterator t = interF->timerList.begin();t!=interF->timerList.end();++t){
+						if(!(interF->runnable)) break;
+						EventTimer tempEvent = (*t);
+						SMEvent tempSMEvent = tempEvent.first;
+						TimedStatemachineInterface * statemachine = tempSMEvent.first;
+						sc_eventid eventId = tempSMEvent.second;
+
+						TimePair tempTimer = tempEvent.second;
+						clock_t start = tempTimer.first;
+						sc_integer interval = tempTimer.second;
+
+						clock_t now = clock();
+						if(now > (start + interval)) statemachine->raiseTimeEvent(eventId);
+					}
+				}
+			}
+		};
 };
+
+static RobotTimerInterface staticCreator;
 
 int main()
 {
