@@ -2,6 +2,14 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <ctime>
+#include <list>
+#include <iterator>
+#include <utility>
+#include <thread>
+#include "TimerInterface.h"
+#include "sc_types.h"
+
 
 using namespace std;
 
@@ -143,6 +151,80 @@ public:
 	sc_integer getStep(sc_integer i) {
 		return 1;
 	}
+};
+
+class RobotTimerInterface : public TimerInterface {
+	public:	
+
+		RobotTimerInterface(){
+			t1 = std::thread(timerLoop);
+		}
+
+		/*
+		 * Starts the timing for a time event.
+		 */ 
+		void setTimer(TimedStatemachineInterface* statemachine, sc_eventid event, sc_integer interval, sc_boolean isPeriodic) {
+			clock_t now = clock();
+			TimePair newTimer(now, interval);
+			EventTimer newEventTimer(event,newTimer);
+			timerList.insert(timerList.end(),newEventTimer);
+		}
+		
+		/*
+		 * Unsets the given time event.
+		 */
+		void unsetTimer(TimedStatemachineInterface* statemachine, sc_eventid event){
+			if(event != NULL){
+				runnable = false;
+				t1.join();
+				for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
+					if(t->first.second == event) {					
+						timerList.erase(t);
+					}
+				}
+				*(sc_boolean*)event = false;
+				runnable=true;
+				t1 = std::thread(timerLoop);
+			}
+		}
+
+		void timerLoop(){
+			while(runnable && !terminate){
+				for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
+					if(!runnable) break;
+					EventTimer tempEvent = (*t);
+					SMEvent tempSMEvent = tempEvent.first;
+					TimedStatemachineInterface * statemachine = tempSMEvent.first;
+					sc_eventid eventId = tempSMEvent.second;
+
+					TimePair tempTimer = tempEvent.second;
+					clock_t start = tempTimer.first;
+					sc_integer interval = tempTimer.second;
+
+					clock_t now = clock();
+					if(now > (start + interval)) statemachine.raiseTimeEvent(eventId);
+				}
+			}
+		}
+	
+		/*
+		 * Cancel timer service. Use this to end possible timing threads and free
+		 * memory resources.
+		 */
+		void cancel(){
+			terminate = true;
+			t1.join();
+		}
+
+	private:
+		typedef pair<clock_t, sc_integer> TimePair;
+		typedef pair<TimedStatemachineInterface*,sc_eventid> SMEvent;
+		typedef pair<SMEvent, TimePair> EventTimer;
+		std::list<EventTimer> timerList;
+
+		std::thread t1;
+		bool runnable = true;
+		bool terminate = false; 
 };
 
 int main()
