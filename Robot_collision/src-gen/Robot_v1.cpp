@@ -80,12 +80,13 @@ void Robot_v1::enter()
 		std::cout << "Enter Okay" << std::endl;
 	}
 	catch(std::exception e){
-		std::cout << e.what() << std::endl;
+		std::cout <<"My Exception Handler: " << e.what() << std::endl;
 	}
 }
 
 void Robot_v1::exit()
 {
+	std::cout << "Exit Init" << std::endl;
 	/* Default exit sequence for statechart robot_v1 */
 	/* Default exit sequence for region main region */
 	/* Handle exit of all possible states (of main region) at position 0... */
@@ -285,6 +286,7 @@ void Robot_v1::exit()
 }
 
 void Robot_v1::runCycle() {
+	std::cout << "RunCycle Init" << std::endl;
 	
 	clearOutEvents();
 	
@@ -403,6 +405,7 @@ void Robot_v1::runCycle() {
 	}
 	
 	clearInEvents();
+	std::cout << "runCycle Okay" << std::endl;
 }
 
 void Robot_v1::clearInEvents() {

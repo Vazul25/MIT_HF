@@ -6,10 +6,8 @@
 #include <list>
 #include <iterator>
 #include <utility>
-//#include "mingw.thread.h"
+#include <exception>
 #include <thread>
-//#include <pthread.h>
-//#include <boost/thread/thread.hpp>
 #include "TimerInterface.h"
 #include "sc_types.h"
 
@@ -167,35 +165,49 @@ public:
 	}
 };
 
+typedef pair<clock_t, sc_integer> TimePair;
+typedef pair<TimedStatemachineInterface*,sc_eventid> SMEvent;
+typedef pair<SMEvent, TimePair> EventTimer; 
+
+static bool runnable;
+static bool terminateVar;
+static std::list<EventTimer> timerList;
+
 class RobotTimerInterface : public TimerInterface {
 	public:	
+		
+		
 		std::thread t1;
+		
 
 		static void timerLoop(RobotTimerInterface* interF ){
-			while(interF->runnable && !(interF->terminate)){
-				for(std::list<EventTimer>::iterator t = interF->timerList.begin();t!=interF->timerList.end();++t){
-					if(!(interF->runnable)) break;
-					EventTimer tempEvent = (*t);
-					SMEvent tempSMEvent = tempEvent.first;
-					TimedStatemachineInterface * statemachine = tempSMEvent.first;
-					sc_eventid eventId = tempSMEvent.second;
-
-					TimePair tempTimer = tempEvent.second;
-					clock_t start = tempTimer.first;
-					sc_integer interval = tempTimer.second;
-
-					clock_t now = clock();
-					if(now > (start + interval)) statemachine->raiseTimeEvent(eventId);
-				}
-			}			
+			try{
+				std::cout << "TimerLOOP Init: " << std::endl;
+				/*while(runnable && !(terminateVar)){
+					for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
+						if(!(runnable)) break;
+						EventTimer tempEvent = (*t);
+						SMEvent tempSMEvent = tempEvent.first;
+						TimedStatemachineInterface * statemachine = tempSMEvent.first;
+						sc_eventid eventId = tempSMEvent.second;
+	
+						TimePair tempTimer = tempEvent.second;
+						clock_t start = tempTimer.first;
+						sc_integer interval = tempTimer.second;
+	
+						clock_t now = clock();
+						if(now > (start + interval)) statemachine->raiseTimeEvent(eventId);
+					}
+				}*/
+			}
+			catch(std::exception e){
+				std::cout <<"My Exception Handler: " << e.what() << std::endl;
+			}		
 		}	
 		
 		RobotTimerInterface(){
 			runnable = true;
-			terminate = false;
-			//TimerLoop th;
-			//t1 = std::thread(timerLoop,this);
-			//pthread_create(&thread,NULL,timerLoop,this);
+			terminateVar = false;
 		}
 
 		/*
@@ -214,19 +226,12 @@ class RobotTimerInterface : public TimerInterface {
 		 */
 		void unsetTimer(TimedStatemachineInterface* statemachine, sc_eventid event){
 			if(event != NULL){
-				//runnable = false;
-				//t1.join();
-				//pthread_join(thread,NULL);
 				for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
 					if(t->first.second == event) {					
 						timerList.erase(t);
 					}
 				}
 				*(sc_boolean*)event = false;
-				//runnable=true;
-				//TimerLoop th;
-				//t1 = std::thread(timerLoop,this);
-				//pthread_create(&thread,NULL,timerLoop,this);
 			}
 		}
 	
@@ -235,18 +240,9 @@ class RobotTimerInterface : public TimerInterface {
 		 * memory resources.
 		 */
 		void cancel(){
-			terminate = true;
-			//pthread_join(thread,NULL);
+			terminateVar = true;
 			t1.join();
 		}
-		
-		typedef pair<clock_t, sc_integer> TimePair;
-		typedef pair<TimedStatemachineInterface*,sc_eventid> SMEvent;
-		typedef pair<SMEvent, TimePair> EventTimer;
-
-		std::list<EventTimer> timerList;
-		bool runnable;
-		bool terminate; 
 };
 
 static RobotTimerInterface staticCreator;
@@ -264,6 +260,7 @@ int main()
 	robot_obj.setInternalSCI_OCB(&robot_util);
 	
 	timer.t1 = std::thread(RobotTimerInterface::timerLoop,&timer);
+	
 	robot_obj.setTimer(&timer);
 
 	try{
@@ -273,10 +270,10 @@ int main()
 		robot_obj.runCycle();
 	}
 	catch(std::exception e){
-		std::cout << "My Exception Handler"<< e.what() << std::endl;
+		std::cout << "My Exception Handler: "<< e.what() << std::endl;
 	}
 
-  	return 0;
+  	return 1;
 }
 
 /*
