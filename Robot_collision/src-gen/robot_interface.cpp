@@ -6,7 +6,9 @@
 #include <list>
 #include <iterator>
 #include <utility>
-#include <pthread.h>
+#include "mingw.thread.h"
+//#include <thread>
+//#include <pthread.h>
 //#include <boost/thread/thread.hpp>
 #include "TimerInterface.h"
 #include "sc_types.h"
@@ -167,7 +169,9 @@ public:
 
 class RobotTimerInterface : public TimerInterface {
 	public:	
-		void* timerLoop(void* object){
+		std::thread t1;
+
+		void timerLoop(void* object){
 			RobotTimerInterface* interF = (RobotTimerInterface*) object;
 			while(interF->runnable && !(interF->terminate)){
 				for(std::list<EventTimer>::iterator t = interF->timerList.begin();t!=interF->timerList.end();++t){
@@ -185,17 +189,17 @@ class RobotTimerInterface : public TimerInterface {
 					if(now > (start + interval)) statemachine->raiseTimeEvent(eventId);
 				}
 			}
-			pthread_exit(NULL);
+			//pthread_exit(NULL);
 		}
 		
-		pthread_t thread;
+		//pthread_t thread;
 		
 		RobotTimerInterface(){
 			runnable = true;
 			terminate = false;
 			//TimerLoop th;
-			//t1 = boost::thread(th,this);
-			pthread_create(&thread,NULL,timerLoop,this);
+			t1 = std::thread(timerLoop,this);
+			//pthread_create(&thread,NULL,timerLoop,this);
 		}
 
 		/*
@@ -215,7 +219,8 @@ class RobotTimerInterface : public TimerInterface {
 		void unsetTimer(TimedStatemachineInterface* statemachine, sc_eventid event){
 			if(event != NULL){
 				runnable = false;
-				pthread_join(thread,NULL);
+				t1.join();
+				//pthread_join(thread,NULL);
 				for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
 					if(t->first.second == event) {					
 						timerList.erase(t);
@@ -224,8 +229,8 @@ class RobotTimerInterface : public TimerInterface {
 				*(sc_boolean*)event = false;
 				runnable=true;
 				//TimerLoop th;
-				//t1 = boost::thread(th,this);
-				pthread_create(&thread,NULL,timerLoop,this);
+				t1 = std::thread(timerLoop,this);
+				//pthread_create(&thread,NULL,timerLoop,this);
 			}
 		}
 	
@@ -235,7 +240,8 @@ class RobotTimerInterface : public TimerInterface {
 		 */
 		void cancel(){
 			terminate = true;
-			pthread_join(thread,NULL);
+			//pthread_join(thread,NULL);
+			t1.join();
 		}
 		
 		typedef pair<clock_t, sc_integer> TimePair;
@@ -245,10 +251,6 @@ class RobotTimerInterface : public TimerInterface {
 		std::list<EventTimer> timerList;
 		bool runnable;
 		bool terminate; 
-
-	private:
-		
-		//boost::thread t1;
 };
 
 static RobotTimerInterface staticCreator;
