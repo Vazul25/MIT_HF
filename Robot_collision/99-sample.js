@@ -50,7 +50,7 @@ module.exports = function(RED) {
 		var words = msg.payload.split(" ");
 		var n=5;
 		var m=5;
-		var walkabilityMatrix = 
+		var matrix = 
 						[[1, 0, 0, 0, 0],
                          [0, 1, 0, 1, 0],
                          [0, 0, 0, 1, 0],
@@ -68,10 +68,10 @@ module.exports = function(RED) {
         // in this example just send it straight on... should process it here really
         var signalmsg = { payload:"1" };
 		node.send([msg,signalmsg,null]);
-		
+		//return [msg,signalmsg,null];
 		}
 		else if(words[0]=="help"){
-		var grid = new PF.Grid( walkabilityMatrix);
+		var grid = new PF.Grid( matrix);
 		// grid = new PF.Grid(matrix);
 		//var finder = new PF.AStarFinder
 		var finder = new PF.AStarFinder({
@@ -81,7 +81,7 @@ module.exports = function(RED) {
 		var x=words[1];
 		var y=words[2];
 		var path = finder.findPath(words[1], words[2], cel[0],cel[1], grid);
-		
+		 
 		
 		msg.payload="";
 		for (var i = 1; i < path.length; i++) {
@@ -97,7 +97,7 @@ module.exports = function(RED) {
 		   node.warn("I saw a payload: "+path);
             // in this example just send it straight on... should process it here really
             node.send([null,signalmsg,msg]);
-
+			//return [null,signalmsg,msg];
 		}
                  });
 
