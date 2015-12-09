@@ -6,8 +6,8 @@
 #include <list>
 #include <iterator>
 #include <utility>
-#include "mingw.thread.h"
-//#include <thread>
+//#include "mingw.thread.h"
+#include <thread>
 //#include <pthread.h>
 //#include <boost/thread/thread.hpp>
 #include "TimerInterface.h"
@@ -171,8 +171,7 @@ class RobotTimerInterface : public TimerInterface {
 	public:	
 		std::thread t1;
 
-		void timerLoop(void* object){
-			RobotTimerInterface* interF = (RobotTimerInterface*) object;
+		static void timerLoop(RobotTimerInterface* interF ){
 			while(interF->runnable && !(interF->terminate)){
 				for(std::list<EventTimer>::iterator t = interF->timerList.begin();t!=interF->timerList.end();++t){
 					if(!(interF->runnable)) break;
@@ -188,17 +187,14 @@ class RobotTimerInterface : public TimerInterface {
 					clock_t now = clock();
 					if(now > (start + interval)) statemachine->raiseTimeEvent(eventId);
 				}
-			}
-			//pthread_exit(NULL);
-		}
-		
-		//pthread_t thread;
+			}			
+		}	
 		
 		RobotTimerInterface(){
 			runnable = true;
 			terminate = false;
 			//TimerLoop th;
-			t1 = std::thread(timerLoop,this);
+			//t1 = std::thread(timerLoop,this);
 			//pthread_create(&thread,NULL,timerLoop,this);
 		}
 
@@ -218,8 +214,8 @@ class RobotTimerInterface : public TimerInterface {
 		 */
 		void unsetTimer(TimedStatemachineInterface* statemachine, sc_eventid event){
 			if(event != NULL){
-				runnable = false;
-				t1.join();
+				//runnable = false;
+				//t1.join();
 				//pthread_join(thread,NULL);
 				for(std::list<EventTimer>::iterator t = timerList.begin();t!=timerList.end();++t){
 					if(t->first.second == event) {					
@@ -227,9 +223,9 @@ class RobotTimerInterface : public TimerInterface {
 					}
 				}
 				*(sc_boolean*)event = false;
-				runnable=true;
+				//runnable=true;
 				//TimerLoop th;
-				t1 = std::thread(timerLoop,this);
+				//t1 = std::thread(timerLoop,this);
 				//pthread_create(&thread,NULL,timerLoop,this);
 			}
 		}
@@ -261,10 +257,14 @@ int main()
 	RobotComm robot_comm;
 	RobotSensor robot_sensor;
 	RobotUtility robot_util;
+	RobotTimerInterface timer;
 
 	robot_obj.setSCI_Comm_OCB(&robot_comm);
 	robot_obj.setSCI_Sensor_OCB(&robot_sensor);
 	robot_obj.setInternalSCI_OCB(&robot_util);
+	
+	timer.t1 = std::thread(RobotTimerInterface::timerLoop,&timer);
+	robot_obj.setTimer(&timer);
 
 	try{
 		std::cout << "Objektumok letrejottek" << std::endl;
@@ -273,7 +273,7 @@ int main()
 		robot_obj.runCycle();
 	}
 	catch(std::exception e){
-		std::cout << e.what() << std::endl;
+		std::cout << "My Exception Handler"<< e.what() << std::endl;
 	}
 
   	return 0;
