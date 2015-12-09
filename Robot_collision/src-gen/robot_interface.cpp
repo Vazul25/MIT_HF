@@ -6,7 +6,7 @@
 #include <list>
 #include <iterator>
 #include <utility>
-#include <thread>
+#include <boost/thread/thread.hpp>
 #include "TimerInterface.h"
 #include "sc_types.h"
 
@@ -19,6 +19,7 @@ enum Comm_Packets{
 
 char* mtx;
 int n, m;
+String path;
 
 class RobotComm : public Robot_v1::SCI_Comm_OCB{
 public:	
@@ -61,7 +62,8 @@ public:
 
 			getline(myfile, temp);
 			goal_x = (int)(temp[0]-'0');
-			goal_y = (int)(temp[2]-'0');			
+			goal_y = (int)(temp[2]-'0');
+			myfile.close();			
 		}
 	}
 
@@ -72,9 +74,17 @@ public:
 			int db=0;
 			string temp;
 			getline(myfile,temp);
+			int db=0;
+			string temp = temp + "0";
+			for(int i = 0;i<temp.size();i++) if(temp[i] >= '0' && temp[i] <= '4') db++;
+			char* out = char[db];
+			int j=0;
 			for(int i=1;i<temp.size();i++){
-				//TODO
+				if(temp[i] !=',') out[j++] = temp[i];
 			}
+			myfile.close();
+			path = String(out);
+
 		}
 	}
 	
@@ -149,7 +159,7 @@ class RobotUtility : public Robot_v1::InternalSCI_OCB {
 public:
 	
 	sc_integer getStep(sc_integer i) {
-		return 1;
+		if(i<path.size()) return (int)(path[i]-'0');
 	}
 };
 
@@ -157,7 +167,7 @@ class RobotTimerInterface : public TimerInterface {
 	public:	
 
 		RobotTimerInterface(){
-			t1 = std::thread(timerLoop);
+			t1 = boost::thread(timerLoop);
 		}
 
 		/*
@@ -184,7 +194,7 @@ class RobotTimerInterface : public TimerInterface {
 				}
 				*(sc_boolean*)event = false;
 				runnable=true;
-				t1 = std::thread(timerLoop);
+				t1 = boost::thread(timerLoop);
 			}
 		}
 
@@ -222,7 +232,7 @@ class RobotTimerInterface : public TimerInterface {
 		typedef pair<SMEvent, TimePair> EventTimer;
 		std::list<EventTimer> timerList;
 
-		std::thread t1;
+		boost::thread t1;
 		bool runnable = true;
 		bool terminate = false; 
 };
@@ -242,7 +252,7 @@ int main()
 		std::cout << "Objektumok letrejottek" << std::endl;
 		robot_obj.init();
 		robot_obj.enter();
-		//robot_obj.runCycle();
+		robot_obj.runCycle();
 	}
 	catch(std::exception e){
 		std::cout << e.what() << std::endl;
