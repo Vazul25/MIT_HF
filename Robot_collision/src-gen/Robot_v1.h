@@ -19,32 +19,32 @@ class Robot_v1 : public TimedStatemachineInterface, public StatemachineInterface
 		
 		//! enumeration of all states 
 		typedef enum {
-			main_region_Start,
-			main_region_Comm_test,
-			main_region_Comm_test_Comm_test_sd_Start,
-			main_region_Comm_test_Comm_test_sd_WaitForCloud,
-			main_region_Comm_test_Comm_test_sd_Link_Established,
-			main_region_Robot_Logic,
+			main_region_Start,													//0
+			main_region_Comm_test,												//1
+			main_region_Comm_test_Comm_test_sd_Start,							//2
+			main_region_Comm_test_Comm_test_sd_WaitForCloud,					//3
+			main_region_Comm_test_Comm_test_sd_Link_Established,				//4
+			main_region_Robot_Logic,											//5
 			main_region_Robot_Logic_Robot_Logic_sd_Init,
 			main_region_Robot_Logic_Robot_Logic_sd_Sensor_update,
 			main_region_Robot_Logic_Robot_Logic_sd_Up,
 			main_region_Robot_Logic_Robot_Logic_sd_Right,
-			main_region_Robot_Logic_Robot_Logic_sd_Check_goals,
+			main_region_Robot_Logic_Robot_Logic_sd_Check_goals,					//10
 			main_region_Robot_Logic_Robot_Logic_sd_DeadEnd,
 			main_region_Robot_Logic_Robot_Logic_sd__final_,
 			main_region_Help_from_Cloud,
 			main_region_Help_from_Cloud_Help_from_Cloud_sd_Send,
-			main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message,
+			main_region_Help_from_Cloud_Help_from_Cloud_sd_Wait_for_Message,	//15
 			main_region_Help_from_Cloud_Help_from_Cloud_sd_Help_received,
 			main_region_Path_Walking,
 			main_region_Path_Walking_Path_Walking_sd_Sensor_update,
 			main_region_Path_Walking_Path_Walking_sd_Next_Step,
-			main_region_Path_Walking_Path_Walking_sd_Init,
-			main_region_Path_Walking_Path_Walking_sd_Up,
+			main_region_Path_Walking_Path_Walking_sd_Init,						//20
+			main_region_Path_Walking_Path_Walking_sd_Up,	
 			main_region_Path_Walking_Path_Walking_sd_Right,
 			main_region_Path_Walking_Path_Walking_sd_Down,
 			main_region_Path_Walking_Path_Walking_sd_Left,
-			Robot_Logic_Control_Wait_for_Command,
+			Robot_Logic_Control_Wait_for_Command,								//25
 			Robot_Logic_Control_Go_Up,
 			Robot_Logic_Control_Go_Down,
 			Robot_Logic_Control_Go_Left,
