@@ -249,12 +249,12 @@
           <styles xsi:type="notation:BooleanValueStyle" xmi:id="_qlfqA1_REeW4UopF13yAUw" name="isHorizontal"/>
           <styles xsi:type="notation:BooleanValueStyle" xmi:id="_BZ24gJHsEeW39aAwiAO1-g" name="isInline"/>
           <styles xsi:type="notation:StringValueStyle" xmi:id="_c5tOoJ97EeWIK8k9RyvAXA" name="featureToShow" stringValue="documentation"/>
-          <layoutConstraint xsi:type="notation:Bounds" xmi:id="_qleb41_REeW4UopF13yAUw" x="326" y="185" width="111" height="52"/>
+          <layoutConstraint xsi:type="notation:Bounds" xmi:id="_qleb41_REeW4UopF13yAUw" x="326" y="185" width="112" height="51"/>
         </children>
         <layoutConstraint xsi:type="notation:Bounds" xmi:id="_xQtXEV_MEeW4UopF13yAUw"/>
       </children>
       <styles xsi:type="notation:ShapeStyle" xmi:id="_xNyl8V_MEeW4UopF13yAUw" fontName="Verdana" fillColor="15790320" lineColor="12632256"/>
-      <layoutConstraint xsi:type="notation:Bounds" xmi:id="_xQulMF_MEeW4UopF13yAUw" x="388" y="12" width="465" height="287"/>
+      <layoutConstraint xsi:type="notation:Bounds" xmi:id="_xQulMF_MEeW4UopF13yAUw" x="388" y="12" width="482" height="307"/>
     </children>
     <children xsi:type="notation:Shape" xmi:id="_xSF3IF_MEeW4UopF13yAUw" type="StatechartText" fontName="Verdana" lineColor="4210752">
       <children xsi:type="notation:DecorationNode" xmi:id="_xSHFQF_MEeW4UopF13yAUw" type="StatechartName">
@@ -265,7 +265,7 @@
         <layoutConstraint xsi:type="notation:Bounds" xmi:id="_xSHFRF_MEeW4UopF13yAUw"/>
       </children>
       <styles xsi:type="notation:StringValueStyle" xmi:id="_g_CXkJOOEeW5q9HW3m0XsA" name="featureToShow" stringValue="specification"/>
-      <layoutConstraint xsi:type="notation:Bounds" xmi:id="_xSJhgF_MEeW4UopF13yAUw" x="-70" y="-5" width="431" height="671"/>
+      <layoutConstraint xsi:type="notation:Bounds" xmi:id="_xSJhgF_MEeW4UopF13yAUw" x="-70" y="-5" width="431" height="625"/>
     </children>
     <children xmi:id="_we06sGRMEeWvdfra5dURUQ" type="Region" element="_we07EWRMEeWvdfra5dURUQ">
       <children xsi:type="notation:DecorationNode" xmi:id="_we06sWRMEeWvdfra5dURUQ" type="RegionName">
