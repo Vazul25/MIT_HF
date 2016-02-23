@@ -1,0 +1,1827 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'>
+<nta>
+<declaration>
+bool end = false;
+
+int pos_y ;
+
+bool down ;
+
+int message ;
+
+int map_x = 5;
+
+int map_y = 5;
+
+int pos_x ;
+
+bool up ;
+
+const int init_x = 0;
+
+bool right ;
+
+int goal_y = 2;
+
+int nextStep ;
+
+int index ;
+
+bool comm ;
+
+const int init_y = 0;
+
+bool left ;
+
+int goal_x = 2;
+
+broadcast chan syncChan1;
+
+broadcast chan syncChan2;
+
+broadcast chan syncChan3;
+
+broadcast chan syncChan4;
+
+broadcast chan syncChan5;
+
+broadcast chan syncChan6;
+
+broadcast chan syncChan7;
+
+broadcast chan syncChan8;
+
+broadcast chan syncChan9;
+
+broadcast chan syncChan10;
+
+broadcast chan syncChan11;
+
+broadcast chan syncChan12;
+
+broadcast chan syncChan13;
+
+broadcast chan syncChan14;
+
+broadcast chan syncChan15;
+</declaration>
+<template>
+<name>Robot_Logic_sdOfRobot_Logic</name>
+<declaration>
+bool isActive = false;
+
+clock Timer;
+</declaration>
+	
+<location id="shallowHistory">
+<name>shallowHistory</name>		
+<label kind="comments">Initial entry node</label>
+<committed/>
+</location>
+
+<location id="Right">
+<name>Right</name>		
+<label kind="invariant">Timer &lt;=  1</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Up">
+<name>Up</name>		
+<label kind="invariant">Timer &lt;=  1</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Sensor_update">
+<name>Sensor_update</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="DeadEnd">
+<name>DeadEnd</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Check_goals">
+<name>Check_goals</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Init">
+<name>Init</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Choice0">
+<name>Choice0</name>		
+<label kind="comments">A choice</label>
+<committed/>
+</location>
+
+<location id="FinalState0">
+<name>FinalState0</name>		
+<label kind="comments">A final state</label>
+</location>
+
+<location id="ExitNode0">
+<name>ExitNode0</name>		
+<label kind="comments">An exit node</label>
+</location>
+
+<location id="Init">
+<name>Init</name>		
+</location>
+
+<location id="EntryLocationOfInit4">
+<name>EntryLocationOfInit4</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfRight9">
+<name>EntryLocationOfRight9</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfUp11">
+<name>EntryLocationOfUp11</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfSensor_update18">
+<name>EntryLocationOfSensor_update18</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfDeadEnd24">
+<name>EntryLocationOfDeadEnd24</name>		
+<committed/>
+</location>
+<init ref="Init"/>
+	
+<transition>
+<source ref="Check_goals"/>
+<target ref="EntryLocationOfSensor_update18"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; pos_x !=goal_x || pos_y !=goal_y</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfUp11"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; up == false</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfRight9"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; up == true &amp;&amp;right == false</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfDeadEnd24"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Sensor_update"/>
+<target ref="Choice0"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Up"/>
+<target ref="Check_goals"/>
+<label kind="guard">Timer &gt;=  1</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="Check_goals"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="DeadEnd"/>
+<target ref="ExitNode0"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan3!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="shallowHistory"/>
+<target ref="EntryLocationOfInit4"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan12!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Check_goals"/>
+<target ref="FinalState0"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+end = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Right"/>
+<target ref="Check_goals"/>
+<label kind="guard">Timer &gt;=  1</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="shallowHistory"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Sensor_update"/>
+<target ref="Sensor_update"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Right"/>
+<target ref="Right"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="DeadEnd"/>
+<target ref="DeadEnd"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="Init"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Check_goals"/>
+<target ref="Check_goals"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="FinalState0"/>
+<target ref="FinalState0"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="ExitNode0"/>
+<target ref="ExitNode0"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Up"/>
+<target ref="Up"/>
+<label kind="synchronisation">syncChan5?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Sensor_update"/>
+<target ref="Sensor_update"/>
+<label kind="synchronisation">syncChan9?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Right"/>
+<target ref="Right"/>
+<label kind="synchronisation">syncChan9?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="DeadEnd"/>
+<target ref="DeadEnd"/>
+<label kind="synchronisation">syncChan9?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="Init"/>
+<label kind="synchronisation">syncChan9?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Check_goals"/>
+<target ref="Check_goals"/>
+<label kind="synchronisation">syncChan9?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="FinalState0"/>
+<target ref="FinalState0"/>
+<label kind="synchronisation">syncChan9?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="ExitNode0"/>
+<target ref="ExitNode0"/>
+<label kind="synchronisation">syncChan9?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Up"/>
+<target ref="Up"/>
+<label kind="synchronisation">syncChan9?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfInit4"/>
+<target ref="Init"/>
+<label kind="assignment">
+map_x = Az FeatureCall feature-e nem VariableDefinition. :(, 
+pos_y = Az FeatureCall feature-e nem VariableDefinition. :(, 
+map_y = Az FeatureCall feature-e nem VariableDefinition. :(, 
+goal_y = Az FeatureCall feature-e nem VariableDefinition. :(, 
+pos_x = Az FeatureCall feature-e nem VariableDefinition. :(, 
+goal_x = Az FeatureCall feature-e nem VariableDefinition. :(
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfRight9"/>
+<target ref="Right"/>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfUp11"/>
+<target ref="Up"/>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfSensor_update18"/>
+<target ref="Sensor_update"/>
+<label kind="assignment">
+up = Az FeatureCall feature-e nem VariableDefinition. :(, 
+down = Az FeatureCall feature-e nem VariableDefinition. :(, 
+left = Az FeatureCall feature-e nem VariableDefinition. :(, 
+right = Az FeatureCall feature-e nem VariableDefinition. :(
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfDeadEnd24"/>
+<target ref="DeadEnd"/>
+<label kind="assignment">
+</label>
+
+</transition>
+</template>
+
+<template>
+<name>Comm_test_sdOfComm_test</name>
+<declaration>
+bool isActive = false;
+
+clock Timer;
+</declaration>
+	
+<location id="initial">
+<name>initial</name>		
+<label kind="comments">Initial entry node</label>
+<committed/>
+</location>
+
+<location id="Start">
+<name>Start</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Link_Established">
+<name>Link_Established</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="WaitForCloud">
+<name>WaitForCloud</name>		
+<label kind="invariant">Timer &lt;=  5</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Choice0">
+<name>Choice0</name>		
+<label kind="comments">A choice</label>
+<committed/>
+</location>
+
+<location id="Init">
+<name>Init</name>		
+</location>
+
+<location id="EntryLocationOfStart19">
+<name>EntryLocationOfStart19</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfLink_Established22">
+<name>EntryLocationOfLink_Established22</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfWaitForCloud23">
+<name>EntryLocationOfWaitForCloud23</name>		
+<committed/>
+</location>
+<init ref="Init"/>
+	
+<transition>
+<source ref="Start"/>
+<target ref="EntryLocationOfWaitForCloud23"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">, 
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="WaitForCloud"/>
+<target ref="Choice0"/>
+<label kind="guard">Timer &gt;=  5</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfWaitForCloud23"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="initial"/>
+<target ref="EntryLocationOfStart19"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan13!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfLink_Established22"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; message == 1</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan4?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Start"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan4?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Link_Established"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan4?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="WaitForCloud"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan4?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Start"/>
+<target ref="Start"/>
+<label kind="synchronisation">syncChan8?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Link_Established"/>
+<target ref="Link_Established"/>
+<label kind="synchronisation">syncChan8?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="WaitForCloud"/>
+<target ref="WaitForCloud"/>
+<label kind="synchronisation">syncChan8?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfStart19"/>
+<target ref="Start"/>
+<label kind="assignment">
+Az FeatureCall feature-e nem VariableDefinition. :(, 
+message =  0
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfLink_Established22"/>
+<target ref="Link_Established"/>
+<label kind="assignment">
+comm =  true
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfWaitForCloud23"/>
+<target ref="WaitForCloud"/>
+<label kind="assignment">
+Az FeatureCall feature-e nem VariableDefinition. :(
+</label>
+
+</transition>
+</template>
+
+<template>
+<name>Help_from_Cloud_sdOfHelp_from_Cloud</name>
+<declaration>
+bool isActive = false;
+
+clock Timer;
+</declaration>
+	
+<location id="initial">
+<name>initial</name>		
+<label kind="comments">Initial entry node</label>
+<committed/>
+</location>
+
+<location id="Send">
+<name>Send</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Wait_for_Message">
+<name>Wait_for_Message</name>		
+<label kind="invariant">Timer &lt;=  5</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Help_received">
+<name>Help_received</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Choice0">
+<name>Choice0</name>		
+<label kind="comments">A choice</label>
+<committed/>
+</location>
+
+<location id="ExitNode0">
+<name>ExitNode0</name>		
+<label kind="comments">An exit node</label>
+</location>
+
+<location id="Init">
+<name>Init</name>		
+</location>
+
+<location id="EntryLocationOfWait_for_Message10">
+<name>EntryLocationOfWait_for_Message10</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfHelp_received15">
+<name>EntryLocationOfHelp_received15</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfSend21">
+<name>EntryLocationOfSend21</name>		
+<committed/>
+</location>
+<init ref="Init"/>
+	
+<transition>
+<source ref="initial"/>
+<target ref="EntryLocationOfSend21"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan15!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfHelp_received15"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; message == 4</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Send"/>
+<target ref="EntryLocationOfWait_for_Message10"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">, 
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Wait_for_Message"/>
+<target ref="Choice0"/>
+<label kind="guard">Timer &gt;=  5</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Help_received"/>
+<target ref="ExitNode0"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan2!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfWait_for_Message10"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan6?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="ExitNode0"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan6?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Wait_for_Message"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan6?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Help_received"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan6?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Send"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan6?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="ExitNode0"/>
+<target ref="ExitNode0"/>
+<label kind="synchronisation">syncChan10?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Wait_for_Message"/>
+<target ref="Wait_for_Message"/>
+<label kind="synchronisation">syncChan10?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Help_received"/>
+<target ref="Help_received"/>
+<label kind="synchronisation">syncChan10?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Send"/>
+<target ref="Send"/>
+<label kind="synchronisation">syncChan10?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfWait_for_Message10"/>
+<target ref="Wait_for_Message"/>
+<label kind="assignment">
+message = Az FeatureCall feature-e nem VariableDefinition. :(
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfHelp_received15"/>
+<target ref="Help_received"/>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfSend21"/>
+<target ref="Send"/>
+<label kind="assignment">
+Az FeatureCall feature-e nem VariableDefinition. :(, 
+message =  0
+</label>
+
+</transition>
+</template>
+
+<template>
+<name>Robot_Logic_ControlOfStatechart</name>
+<declaration>
+bool isActive = true;
+
+clock Timer;
+</declaration>
+	
+<location id="initial">
+<name>initial</name>		
+<label kind="comments">Initial entry node</label>
+<committed/>
+</location>
+
+<location id="Go_Up">
+<name>Go_Up</name>		
+<label kind="invariant">Timer &lt;=  200</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Wait_for Command">
+<name>Wait_for Command</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Go_Down">
+<name>Go_Down</name>		
+<label kind="invariant">Timer &lt;=  200</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Go_Left">
+<name>Go_Left</name>		
+<label kind="invariant">Timer &lt;=  200</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Go_Right">
+<name>Go_Right</name>		
+<label kind="invariant">Timer &lt;=  200</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="EntryLocationOfGo_Left8">
+<name>EntryLocationOfGo_Left8</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfGo_Down14">
+<name>EntryLocationOfGo_Down14</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfGo_Right17">
+<name>EntryLocationOfGo_Right17</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfGo_Up25">
+<name>EntryLocationOfGo_Up25</name>		
+<committed/>
+</location>
+<init ref="initial"/>
+	
+<transition>
+<source ref="Wait_for Command"/>
+<target ref="Wait_for Command"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; Az FeatureCall feature-e nem VariableDefinition. :( || Az FeatureCall feature-e nem VariableDefinition. :( || Az FeatureCall feature-e nem VariableDefinition. :( || Az FeatureCall feature-e nem VariableDefinition. :(</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Go_Left"/>
+<target ref="Wait_for Command"/>
+<label kind="guard">Timer &gt;=  200</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Wait_for Command"/>
+<target ref="EntryLocationOfGo_Left8"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; pos_x &gt; 0 &amp;&amp;Az FeatureCall feature-e nem VariableDefinition. :(</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Wait_for Command"/>
+<target ref="EntryLocationOfGo_Right17"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; pos_x &lt;(map_x - 1) &amp;&amp;Az FeatureCall feature-e nem VariableDefinition. :(</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Go_Up"/>
+<target ref="Wait_for Command"/>
+<label kind="guard">Timer &gt;=  200</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Go_Down"/>
+<target ref="Wait_for Command"/>
+<label kind="guard">Timer &gt;=  200</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="initial"/>
+<target ref="Wait_for Command"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Wait_for Command"/>
+<target ref="EntryLocationOfGo_Down14"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; pos_y &lt;(map_y - 1) &amp;&amp;Az FeatureCall feature-e nem VariableDefinition. :(</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Go_Right"/>
+<target ref="Wait_for Command"/>
+<label kind="guard">Timer &gt;=  200</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Wait_for Command"/>
+<target ref="EntryLocationOfGo_Up25"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; pos_y &gt; 0 &amp;&amp;Az FeatureCall feature-e nem VariableDefinition. :(</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfGo_Left8"/>
+<target ref="Go_Left"/>
+<label kind="assignment">
+pos_x = pos_x - 1
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfGo_Down14"/>
+<target ref="Go_Down"/>
+<label kind="assignment">
+pos_y = pos_y + 1
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfGo_Right17"/>
+<target ref="Go_Right"/>
+<label kind="assignment">
+pos_x = pos_x + 1
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfGo_Up25"/>
+<target ref="Go_Up"/>
+<label kind="assignment">
+pos_y = pos_y - 1
+</label>
+
+</transition>
+</template>
+
+<template>
+<name>Path_Walking_sdOfPath_Walking</name>
+<declaration>
+bool isActive = false;
+
+clock Timer;
+</declaration>
+	
+<location id="initial">
+<name>initial</name>		
+<label kind="comments">Initial entry node</label>
+<committed/>
+</location>
+
+<location id="Next_Step">
+<name>Next_Step</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Left">
+<name>Left</name>		
+<label kind="invariant">Timer &lt;=  20</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Up">
+<name>Up</name>		
+<label kind="invariant">Timer &lt;=  20</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Sensor_update">
+<name>Sensor_update</name>		
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Down">
+<name>Down</name>		
+<label kind="invariant">Timer &lt;=  20</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Init">
+<name>Init</name>		
+<label kind="invariant">Timer &lt;=  1</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Right">
+<name>Right</name>		
+<label kind="invariant">Timer &lt;=  20</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Choice0">
+<name>Choice0</name>		
+<label kind="comments">A choice</label>
+<committed/>
+</location>
+
+<location id="ExitNode0">
+<name>ExitNode0</name>		
+<label kind="comments">An exit node</label>
+</location>
+
+<location id="Init">
+<name>Init</name>		
+</location>
+
+<location id="EntryLocationOfDown5">
+<name>EntryLocationOfDown5</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfRight6">
+<name>EntryLocationOfRight6</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfNext_Step7">
+<name>EntryLocationOfNext_Step7</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfUp12">
+<name>EntryLocationOfUp12</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfInit13">
+<name>EntryLocationOfInit13</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfSensor_update16">
+<name>EntryLocationOfSensor_update16</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfLeft20">
+<name>EntryLocationOfLeft20</name>		
+<committed/>
+</location>
+<init ref="Init"/>
+	
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfDown5"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; nextStep == 3</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfLeft20"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; nextStep == 4</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Down"/>
+<target ref="EntryLocationOfSensor_update16"/>
+<label kind="guard">Timer &gt;=  20</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Up"/>
+<target ref="EntryLocationOfSensor_update16"/>
+<label kind="guard">Timer &gt;=  20</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="initial"/>
+<target ref="EntryLocationOfInit13"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan14!</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Sensor_update"/>
+<target ref="EntryLocationOfNext_Step7"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="EntryLocationOfSensor_update16"/>
+<label kind="guard">Timer &gt;=  1</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfRight6"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; nextStep == 2</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Right"/>
+<target ref="EntryLocationOfSensor_update16"/>
+<label kind="guard">Timer &gt;=  20</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfSensor_update16"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Next_Step"/>
+<target ref="ExitNode0"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; nextStep == 0</label>
+<label kind="synchronisation">syncChan1!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Left"/>
+<target ref="EntryLocationOfSensor_update16"/>
+<label kind="guard">Timer &gt;=  20</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Next_Step"/>
+<target ref="Choice0"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; nextStep != 0</label>
+<label kind="assignment">
+index =  1
+</label>
+
+</transition>
+
+<transition>
+<source ref="Choice0"/>
+<target ref="EntryLocationOfUp12"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; nextStep == 1</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Down"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="ExitNode0"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Left"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Up"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Right"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Next_Step"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Sensor_update"/>
+<target ref="initial"/>
+<label kind="synchronisation">syncChan7?</label>
+<label kind="assignment">
+isActive = true
+</label>
+
+</transition>
+
+<transition>
+<source ref="Down"/>
+<target ref="Down"/>
+<label kind="synchronisation">syncChan11?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="ExitNode0"/>
+<target ref="ExitNode0"/>
+<label kind="synchronisation">syncChan11?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Left"/>
+<target ref="Left"/>
+<label kind="synchronisation">syncChan11?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Up"/>
+<target ref="Up"/>
+<label kind="synchronisation">syncChan11?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Init"/>
+<target ref="Init"/>
+<label kind="synchronisation">syncChan11?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Right"/>
+<target ref="Right"/>
+<label kind="synchronisation">syncChan11?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Next_Step"/>
+<target ref="Next_Step"/>
+<label kind="synchronisation">syncChan11?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="Sensor_update"/>
+<target ref="Sensor_update"/>
+<label kind="synchronisation">syncChan11?</label>
+<label kind="assignment">
+isActive = false
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfDown5"/>
+<target ref="Down"/>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfRight6"/>
+<target ref="Right"/>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfNext_Step7"/>
+<target ref="Next_Step"/>
+<label kind="assignment">
+nextStep = Az ElementReferenceExpression reference-e nem VariableDefinition. :(
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfUp12"/>
+<target ref="Up"/>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfInit13"/>
+<target ref="Init"/>
+<label kind="assignment">
+nextStep =  0, 
+index =  0
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfSensor_update16"/>
+<target ref="Sensor_update"/>
+<label kind="assignment">
+right = Az FeatureCall feature-e nem VariableDefinition. :(, 
+up = Az FeatureCall feature-e nem VariableDefinition. :(, 
+left = Az FeatureCall feature-e nem VariableDefinition. :(, 
+down = Az FeatureCall feature-e nem VariableDefinition. :(
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfLeft20"/>
+<target ref="Left"/>
+<label kind="assignment">
+</label>
+
+</transition>
+</template>
+
+<template>
+<name>mainregionOfStatechart</name>
+<declaration>
+bool isActive = true;
+
+clock Timer;
+</declaration>
+	
+<location id="initial">
+<name>initial</name>		
+<label kind="comments">Initial entry node</label>
+<committed/>
+</location>
+
+<location id="Comm_test">
+<name>Comm_test</name>		
+<label kind="comments">Composite state</label>
+</location>
+
+<location id="Help_from_Cloud">
+<name>Help_from_Cloud</name>		
+<label kind="comments">Composite state</label>
+</location>
+
+<location id="Start">
+<name>Start</name>		
+<label kind="invariant">Timer &lt;=  1</label>
+<label kind="comments">Simple state</label>
+</location>
+
+<location id="Robot_Logic">
+<name>Robot_Logic</name>		
+<label kind="comments">Composite state</label>
+</location>
+
+<location id="Path_Walking">
+<name>Path_Walking</name>		
+<label kind="comments">Composite state</label>
+</location>
+
+<location id="EntryLocationOfComm_test0">
+<name>EntryLocationOfComm_test0</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfRobot_Logic1">
+<name>EntryLocationOfRobot_Logic1</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfHelp_from_Cloud2">
+<name>EntryLocationOfHelp_from_Cloud2</name>		
+<committed/>
+</location>
+
+<location id="EntryLocationOfPath_Walking3">
+<name>EntryLocationOfPath_Walking3</name>		
+<committed/>
+</location>
+
+<location id="CompositeSyncLocation1">
+<name>CompositeSyncLocation1</name>		
+<committed/>
+</location>
+
+<location id="CompositeSyncLocation2">
+<name>CompositeSyncLocation2</name>		
+<committed/>
+</location>
+
+<location id="CompositeSyncLocation3">
+<name>CompositeSyncLocation3</name>		
+<committed/>
+</location>
+<init ref="initial"/>
+	
+<transition>
+<source ref="Robot_Logic"/>
+<target ref="CompositeSyncLocation1"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan3?</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="initial"/>
+<target ref="Start"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="assignment">
+Timer = 0
+</label>
+
+</transition>
+
+<transition>
+<source ref="Path_Walking"/>
+<target ref="CompositeSyncLocation3"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan1?</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Comm_test"/>
+<target ref="EntryLocationOfRobot_Logic1"/>
+<label kind="guard">!end &amp;&amp; isActive &amp;&amp; comm</label>
+<label kind="synchronisation">syncChan8!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Start"/>
+<target ref="EntryLocationOfComm_test0"/>
+<label kind="guard">Timer &gt;=  1</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="Help_from_Cloud"/>
+<target ref="CompositeSyncLocation2"/>
+<label kind="guard">!end &amp;&amp; isActive</label>
+<label kind="synchronisation">syncChan2?</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfComm_test0"/>
+<target ref="Comm_test"/>
+<label kind="synchronisation">syncChan4!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfRobot_Logic1"/>
+<target ref="Robot_Logic"/>
+<label kind="synchronisation">syncChan5!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfHelp_from_Cloud2"/>
+<target ref="Help_from_Cloud"/>
+<label kind="synchronisation">syncChan6!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="EntryLocationOfPath_Walking3"/>
+<target ref="Path_Walking"/>
+<label kind="synchronisation">syncChan7!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="CompositeSyncLocation1"/>
+<target ref="Help_from_Cloud"/>
+<label kind="synchronisation">syncChan9!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="CompositeSyncLocation2"/>
+<target ref="Path_Walking"/>
+<label kind="synchronisation">syncChan10!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+
+<transition>
+<source ref="CompositeSyncLocation3"/>
+<target ref="Robot_Logic"/>
+<label kind="synchronisation">syncChan11!</label>
+<label kind="assignment">
+</label>
+
+</transition>
+</template>
+
+<template>
+<name>controlTemplate</name>
+<declaration></declaration>
+	
+<location id="triggerLocation">
+<name>triggerLocation</name>		
+</location>
+<init ref="triggerLocation"/>
+	
+</template>
+<system>
+Process_Robot_Logic_sdOfRobot_Logic = Robot_Logic_sdOfRobot_Logic();
+
+Process_Comm_test_sdOfComm_test = Comm_test_sdOfComm_test();
+
+Process_Help_from_Cloud_sdOfHelp_from_Cloud = Help_from_Cloud_sdOfHelp_from_Cloud();
+
+Process_Robot_Logic_ControlOfStatechart = Robot_Logic_ControlOfStatechart();
+
+Process_Path_Walking_sdOfPath_Walking = Path_Walking_sdOfPath_Walking();
+
+Process_mainregionOfStatechart = mainregionOfStatechart();
+
+Process_controlTemplate = controlTemplate();
+system 
+Process_Robot_Logic_sdOfRobot_Logic, 
+Process_Comm_test_sdOfComm_test, 
+Process_Help_from_Cloud_sdOfHelp_from_Cloud, 
+Process_Robot_Logic_ControlOfStatechart, 
+Process_Path_Walking_sdOfPath_Walking, 
+Process_mainregionOfStatechart, 
+Process_controlTemplate
+;
+</system>
+</nta>
